@@ -1,0 +1,16 @@
+N=20
+N_occ=100
+
+J=-1.0
+K=-0.5
+f=0.0
+
+Time=80000
+
+PBC = 1 # 0: No Periodic Boundary Conditions
+	   # 1: Periodic Boundary Conditions
+
+output = 'final'
+
+Bond_Color_Grid = 1 # 0: No Grid
+                    # 1: Grid
