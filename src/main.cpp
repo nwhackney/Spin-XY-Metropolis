@@ -58,29 +58,39 @@ void print_sys(lattice &system, string file_name, int bond_flag=0)
 					if (i!=N-1) {Beni=system.Bond_Energy(i,j,i+1,j);}
 					if (j!=N-1) {Benj=system.Bond_Energy(i,j,i,j+1);}
 
-					if (Beni!=0.0 and Benj!=0.0)
+					if (Beni!=0.0)
 					{
-						double w1=Beni/-1.0;
-						double R1=255.0-205.0*w1*w1*w1;
-						double G1=0.0;
-						double B1=50.0+205.0*w1*w1*w1;
-					
-						double w2=Benj/-1.0;
-						double R2=255.0-205.0*w2*w2*w2;
-						double G2=0.0;
-						double B2=50.0+205.0*w2*w2*w2;
+						double w=-2.0*Beni;
+						double R=255.0-205.0*w*w*w;
+						double G=0.0;
+						double B=50.0+205.0*w*w*w;
 
 						stringstream Red;
 						stringstream Green;
 						stringstream Blue;
 
-						Red<<hex<<(int) (0.5*(R1+R2));
-						Green<<hex<<(int) (0.5*(G1+G2));
-						Blue<<hex<<(int) (0.5*(B1+B2));
+						Red<<hex<<(int) R;
+						Green<<hex<<(int) G;
+						Blue<<hex<<(int) B;
 
-						out<< "set object "<<plaq<<" rect from "<<x<<","<<y<<" to "<<x+d<<","<<y+d<<" back"<<endl;
-   						out<<"set object "<<plaq<<" rect fc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<" fillstyle solid 1.0 noborder"<<endl;
-   						plaq++;						
+						out<< "set arrow from "<<x<<","<<y<<" to "<<x+d<<","<<y<<" as 2 lc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<endl;
+					}
+					if (Benj!=0)
+					{
+						double w=-2.0*Benj;
+						double R=255.0-205.0*w*w*w;
+						double G=0.0;
+						double B=50.0+205.0*w*w*w;
+
+						stringstream Red;
+						stringstream Green;
+						stringstream Blue;
+
+						Red<<hex<<(int) R;
+						Green<<hex<<(int) G;
+						Blue<<hex<<(int) B;
+
+						out<< "set arrow from "<<x<<","<<y<<" to "<<x<<","<<y+d<<" as 2 lc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<endl;
 					}
 				}
 			}
@@ -88,6 +98,21 @@ void print_sys(lattice &system, string file_name, int bond_flag=0)
 	}
 
 	out<<"plot NaN"<<endl;
+}
+
+int voidoid(lattice &system)
+{
+	int N=0;
+	int L=system.how_many();
+
+	for (int i=0; i<L; i++)
+	{
+		for (int j=0; j<L; j++)
+		{
+			if (system.occ(i,j)==1) {N++;}
+		}
+	}
+	return N;
 }
 
 double Box_Muller(double mu, double sigma)
@@ -276,7 +301,7 @@ void run_config()
 	if (pbc==0) {Hamiltonian = &lattice::H;}
 	else if (pbc==1){Hamiltonian = &lattice::H_periodic;}
 
-	for (int i=0; i<5; i++)
+	for (int i=0; i<1; i++)
 	{
 		lattice crystal;
 		crystal.set_const(J,K,f);
@@ -308,7 +333,13 @@ void run_config()
 		for (int t=0; t<Time; t++)
 		{
 			slope=10.0/((double) Time);
-			Temp=1.0/cosh(0.4*slope*((double) t));
+			Temp=1.0/cosh(0.4*slope*((double) t))+0.2;
+			Metropolis(crystal,Temp,Edat,pbc);
+		}
+		for (int t=0; t<Time; t++)
+		{
+			slope=10.0/((double) Time);
+			Temp=0.2/cosh(0.4*slope*((double) t)-4.0);
 			Metropolis(crystal,Temp,Edat,pbc);
 		}
 		for (int t=0; t<10000; t++)
@@ -318,11 +349,13 @@ void run_config()
 
 		cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 		inf<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
+		inf<<"Spin Site Sanity Check "<<voidoid(crystal)<<endl;
 
 		Edat.close();
 		inf.close();
 
-		print_sys(crystal,out,bcg);
+		print_sys(crystal,out.str(),bcg);
+		print_bitmap(crystal,out.str());
 
 	}
 }
@@ -330,10 +363,7 @@ void run_config()
 int main()
 {
 	srand(time(0));
-
 	run_config();
-
-
 
 	return 0;
 }
