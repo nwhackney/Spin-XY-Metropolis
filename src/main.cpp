@@ -136,7 +136,7 @@ double Box_Muller(double mu, double sigma)
 	return z0 * sigma + mu;
 }
 
-void Metropolis(lattice &system, double T, vector<double> &Elist, int pbc=0)
+void Metropolis(lattice &system, double T, ofstream &Efile, int pbc=0)
 {
 	double (lattice::*Hamiltonian)();
 
@@ -144,7 +144,7 @@ void Metropolis(lattice &system, double T, vector<double> &Elist, int pbc=0)
 	else if (pbc==1){Hamiltonian = &lattice::H_periodic;}
 
 	double E = (system.*Hamiltonian)();
-	Elist.push_back(E);
+	Efile<<E<<endl;
 
 	int N=system.how_many();
 	for (int i=0; i<N-1; i++)
@@ -289,15 +289,13 @@ void run_config()
 	double J=Jp->as<double>();
 	double K=Kp->as<double>();
 	double f=fp->as<double>();
-	string out_file=outp->as<string>();\
+	string out_file=outp->as<string>();
 
 	double (lattice::*Hamiltonian)();
 
 	if (pbc==0) {Hamiltonian = &lattice::H;}
 	else if (pbc==1){Hamiltonian = &lattice::H_periodic;}
 
-	vector<double> Elist;
-	Elist.reserve(Time+10000);
 	for (int i=0; i<1; i++)
 	{
 		lattice crystal;
@@ -306,6 +304,14 @@ void run_config()
 
 		//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
 		//print_sys(crystal,"init");
+
+		stringstream Efile;
+		Efile<<"Energy_"<<i<<".dat";
+		stringstream out;
+		out<<out_file<<"_"<<i;
+
+		ofstream Edat;
+		Edat.open(Efile.str());
 
 		double duration;
 		clock_t start;
@@ -317,11 +323,11 @@ void run_config()
 		{
 			slope=10.0/((double) Time);
 			Temp=1.0/cosh(0.4*slope*((double) t));
-			Metropolis(crystal,Temp,Elist,pbc);
+			Metropolis(crystal,Temp,Edat,pbc);
 		}
 		for (int t=0; t<10000; t++)
 		{
-			Metropolis(crystal,0.0,Elist,pbc);
+			Metropolis(crystal,0.0,Edat,pbc);
 		}
 
 		duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
@@ -342,14 +348,6 @@ void run_config()
 		inf<<"Time: "<<duration<<endl;
 		inf.close();
 
-		stringstream Efile;
-		Efile<<"Energy_"<<i<<".dat";
-		stringstream out;
-		out<<out_file<<"_"<<i;
-
-		ofstream Edat;
-		Edat.open(Efile.str());
-		oid(Elist, Edat);
 		Edat.close();
 
 		print_sys(crystal,out.str(),bcg);
