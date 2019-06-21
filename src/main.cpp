@@ -100,19 +100,14 @@ void print_sys(lattice &system, string file_name, int bond_flag=0)
 	out<<"plot NaN"<<endl;
 }
 
-int voidoid(lattice &system)
+void oid(vector<double> &E, ofstream &file)
 {
-	int N=0;
-	int L=system.how_many();
+	int N=E.size();
 
-	for (int i=0; i<L; i++)
+	for (int i=0; i<N; i++)
 	{
-		for (int j=0; j<L; j++)
-		{
-			if (system.occ(i,j)==1) {N++;}
-		}
+		file<<E[i]<<endl;
 	}
-	return N;
 }
 
 double Box_Muller(double mu, double sigma)
@@ -141,7 +136,7 @@ double Box_Muller(double mu, double sigma)
 	return z0 * sigma + mu;
 }
 
-void Metropolis(lattice &system, double T, ofstream &file, int pbc=0)
+void Metropolis(lattice &system, double T, vector<double> &Elist, int pbc=0)
 {
 	double (lattice::*Hamiltonian)();
 
@@ -149,7 +144,7 @@ void Metropolis(lattice &system, double T, ofstream &file, int pbc=0)
 	else if (pbc==1){Hamiltonian = &lattice::H_periodic;}
 
 	double E = (system.*Hamiltonian)();
-	file<<E<<endl;
+	Elist.push_back(E);
 
 	int N=system.how_many();
 	for (int i=0; i<N-1; i++)
@@ -301,6 +296,8 @@ void run_config()
 	if (pbc==0) {Hamiltonian = &lattice::H;}
 	else if (pbc==1){Hamiltonian = &lattice::H_periodic;}
 
+	vector<double> Elist;
+	Elist.reserve(Time+10000);
 	for (int i=0; i<1; i++)
 	{
 		lattice crystal;
@@ -308,54 +305,54 @@ void run_config()
 		crystal.init(N,occ);
 
 		//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
-
-		stringstream Efile;
-		Efile<<"Energy_"<<i<<".dat";
-		stringstream out;
-		out<<out_file<<"_"<<i;
-		stringstream info;
-		info<<"info_"<<i<<".dat";
-
-		ofstream inf;
-		inf.open(info.str());
-
-		ofstream Edat;
-		Edat.open(Efile.str());
-
 		//print_sys(crystal,"init");
 
-		inf<<N<<"x"<<N<<" lattice"<<endl;
-		inf<<occ<<" spin sites"<<endl;
-		inf<<Time<<" sweeps"<<endl;
+		double duration;
+		clock_t start;
+    		start = clock();
 		
 		double slope,
 		       Temp;
 		for (int t=0; t<Time; t++)
 		{
 			slope=10.0/((double) Time);
-			Temp=1.0/cosh(0.4*slope*((double) t))+0.2;
-			Metropolis(crystal,Temp,Edat,pbc);
-		}
-		for (int t=0; t<Time; t++)
-		{
-			slope=10.0/((double) Time);
-			Temp=0.2/cosh(0.4*slope*((double) t)-4.0);
-			Metropolis(crystal,Temp,Edat,pbc);
+			Temp=1.0/cosh(0.4*slope*((double) t));
+			Metropolis(crystal,Temp,Elist,pbc);
 		}
 		for (int t=0; t<10000; t++)
 		{
-			Metropolis(crystal,0.0,Edat,pbc);
+			Metropolis(crystal,0.0,Elist,pbc);
 		}
 
-		cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
-		inf<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
-		inf<<"Spin Site Sanity Check "<<voidoid(crystal)<<endl;
+		duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 
-		Edat.close();
+		cout<<"Time: "<<duration<<endl;
+		cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
+
+		stringstream info;
+		info<<"info_"<<i<<".dat";
+
+		ofstream inf;
+		inf.open(info.str());
+		inf<<N<<"x"<<N<<" lattice"<<endl;
+		inf<<occ<<" spin sites"<<endl;
+		inf<<Time<<" sweeps"<<endl;
+		inf<<"J="<<J<<" K="<<K<<" f="<<f<<endl;
+		inf<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
+		inf<<"Time: "<<duration<<endl;
 		inf.close();
 
+		stringstream Efile;
+		Efile<<"Energy_"<<i<<".dat";
+		stringstream out;
+		out<<out_file<<"_"<<i;
+
+		ofstream Edat;
+		Edat.open(Efile.str());
+		oid(Elist, Edat);
+		Edat.close();
+
 		print_sys(crystal,out.str(),bcg);
-		print_bitmap(crystal,out.str());
 
 	}
 }
