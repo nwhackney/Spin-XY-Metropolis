@@ -296,63 +296,58 @@ void run_config()
 	if (pbc==0) {Hamiltonian = &lattice::H;}
 	else if (pbc==1){Hamiltonian = &lattice::H_periodic;}
 
-	for (int i=0; i<1; i++)
+	int i=0;
+
+	lattice crystal;
+	crystal.set_const(J,K,f);
+	crystal.init(N,occ);
+
+	//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
+	//print_sys(crystal,"init");
+
+	stringstream Efile;
+	Efile<<"Energy_"<<i<<".dat";
+	stringstream out;
+	out<<out_file<<"_"<<i;
+
+	ofstream Edat;
+	Edat.open(Efile.str());
+
+	double duration;
+	clock_t start;
+		start = clock();
+	
+	double slope,
+	       Temp;
+	for (int t=0; t<Time; t++)
 	{
-		lattice crystal;
-		crystal.set_const(J,K,f);
-		crystal.init(N,occ);
-
-		//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
-		//print_sys(crystal,"init");
-
-		stringstream Efile;
-		Efile<<"Energy_"<<i<<".dat";
-		stringstream out;
-		out<<out_file<<"_"<<i;
-
-		ofstream Edat;
-		Edat.open(Efile.str());
-
-		double duration;
-		clock_t start;
-    		start = clock();
-		
-		double slope,
-		       Temp;
-		for (int t=0; t<Time; t++)
-		{
-			slope=10.0/((double) Time);
-			Temp=1.0/cosh(0.4*slope*((double) t));
-			Metropolis(crystal,Temp,Edat,pbc);
-		}
-		for (int t=0; t<10000; t++)
-		{
-			Metropolis(crystal,0.0,Edat,pbc);
-		}
-
-		duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
-
-		cout<<"Time: "<<duration<<endl;
-		cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
-
-		stringstream info;
-		info<<"info_"<<i<<".dat";
-
-		ofstream inf;
-		inf.open(info.str());
-		inf<<N<<"x"<<N<<" lattice"<<endl;
-		inf<<occ<<" spin sites"<<endl;
-		inf<<Time<<" sweeps"<<endl;
-		inf<<"J="<<J<<" K="<<K<<" f="<<f<<endl;
-		inf<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
-		inf<<"Time: "<<duration<<endl;
-		inf.close();
-
-		Edat.close();
-
-		print_sys(crystal,out.str(),bcg);
-
+		slope=10.0/(80000.0);
+		Temp=1.0/cosh(0.4*slope*((double) t));
+		Metropolis(crystal,Temp,Edat,pbc);
 	}
+
+	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+
+	cout<<"Time: "<<duration<<endl;
+	cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
+
+	stringstream info;
+	info<<"info_"<<i<<".dat";
+
+	ofstream inf;
+	inf.open(info.str());
+	inf<<N<<"x"<<N<<" lattice"<<endl;
+	inf<<occ<<" spin sites"<<endl;
+	inf<<Time<<" sweeps"<<endl;
+	inf<<"J="<<J<<" K="<<K<<" f="<<f<<endl;
+	inf<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
+	inf<<"Time: "<<duration<<endl;
+	inf.close();
+
+	Edat.close();
+
+	print_sys(crystal,out.str(),bcg);
+
 }
 
 int main()
