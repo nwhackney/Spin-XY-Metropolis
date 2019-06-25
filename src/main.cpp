@@ -147,9 +147,9 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int pbc=0)
 	Efile<<E<<endl;
 
 	int N=system.how_many();
-	for (int i=0; i<N-1; i++)
+	for (int i=0; i<N; i++)
 	{
-		for (int j=0; j<N-1;j ++)
+		for (int j=0; j<N;j ++)
 		{
 			lattice trial = system;
 
@@ -321,7 +321,7 @@ void run_config()
 	       Temp;
 	for (int t=0; t<Time; t++)
 	{
-		slope=10.0/(80000.0);
+		slope=10.0/((double) Time);
 		Temp=1.0/cosh(0.4*slope*((double) t));
 		Metropolis(crystal,Temp,Edat,pbc);
 	}
