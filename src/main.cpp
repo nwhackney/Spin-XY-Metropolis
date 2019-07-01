@@ -100,16 +100,6 @@ void print_sys(lattice &system, string file_name, int bond_flag=0)
 	out<<"plot NaN"<<endl;
 }
 
-void oid(vector<double> &E, ofstream &file)
-{
-	int N=E.size();
-
-	for (int i=0; i<N; i++)
-	{
-		file<<E[i]<<endl;
-	}
-}
-
 double Box_Muller(double mu, double sigma)
 {
 	static const double epsilon = std::numeric_limits<double>::min();
@@ -139,8 +129,9 @@ double Box_Muller(double mu, double sigma)
 void Metropolis(lattice &system, double T, ofstream &Efile, int pbc=0)
 {
 	double (lattice::*Hamiltonian)();
+	double (lattice::*local_Hamiltonian)(int, int);
 
-	if (pbc==0) {Hamiltonian = &lattice::H;}
+	if (pbc==0) {Hamiltonian = &lattice::H; local_Hamiltonian = &lattice::H_local; }
 	else if (pbc==1){Hamiltonian = &lattice::H_periodic;}
 
 	double E = (system.*Hamiltonian)();
@@ -152,107 +143,70 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int pbc=0)
 		for (int j=0; j<N;j ++)
 		{
 			lattice trial = system;
+			double trial_E;
+			double E_local;
 
-			if (system.occ(i,j)==0)
+			if (system.occ(i,j)==0) {continue;}
+
+			int flag = rand() % 3;
+			if (flag==0) // rotation
 			{
-				int flag = rand() % 2;
-				if (flag==0) // translation
+				double width = 0.2*exp(-0.5*T);
+				double theta = Box_Muller(system.angle(i,j),width);
+
+				trial.rotate(i,j,theta);
+				trial_E=(trial.*local_Hamiltonian)(i,j);
+				E_local=(system.*local_Hamiltonian)(i,j);
+			}
+			else if (flag==1) // translation
+			{
+				int n = rand() % N;
+				int m = rand() % N;
+
+				if (system.occ(n,m)==0)
 				{
-					int n = rand() % N;
-					int m = rand() % N;
+					trial.flip(i,j);
+					trial.flip(n,m);
 
-					if (system.occ(n,m)==1)
-					{
-						trial.flip(i,j);
-						trial.flip(n,m);
+					double theta=system.angle(i,j);
+					trial.rotate(i,j,0.0);
+					trial.rotate(n,m,theta);
 
-						double theta=system.angle(n,m);
-						trial.rotate(i,j,theta);
-						trial.rotate(n,m,0.0);
-					}
-				}
-				else if (flag==1) // translation+rotation
-				{
-					int n = rand() % N;
-					int m = rand() % N;
-
-					if (system.occ(n,m)==1)
-					{
-						double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
-						
-						trial.flip(i,j);
-						trial.flip(n,m);
-
-						trial.rotate(i,j,theta);
-						trial.rotate(n,m,0.0);
-
-					}
-				}
-
-				double trial_E = (trial.*Hamiltonian)();
-				double delE = trial_E - E;
-				double alpha = ((double) rand()/(double)RAND_MAX);
-
-				double U= exp(-1*delE/T);
-				if (alpha < min(1.0,U))
-				{
-					E=trial_E;
-					system=trial;
+					trial_E=(trial.*local_Hamiltonian)(i,j);
+					trial_E+=(trial.*local_Hamiltonian)(n,m);
+					E_local=(system.*local_Hamiltonian)(i,j);
+					E_local+=(system.*local_Hamiltonian)(n,m);
 				}
 			}
-			else
+			else if (flag==2) // translation+rotation
 			{
-				int flag = rand() % 3;
-				if (flag==0) // rotation
+				int n = rand() % N;
+				int m = rand() % N;
+
+				if (system.occ(n,m)==0)
 				{
-					double width = 0.2*exp(-0.5*T);
-					double theta = Box_Muller(system.angle(i,j),width);
+					double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+					
+					trial.flip(i,j);
+					trial.flip(n,m);
 
-					trial.rotate(i,j,theta);
+					trial.rotate(i,j,0.0);
+					trial.rotate(n,m,theta);
+
+					trial_E=(trial.*local_Hamiltonian)(i,j);
+					trial_E+=(trial.*local_Hamiltonian)(n,m);
+					E_local=(system.*local_Hamiltonian)(i,j);
+					E_local+=(system.*local_Hamiltonian)(n,m);
 				}
-				else if (flag==1) // translation
-				{
-					int n = rand() % N;
-					int m = rand() % N;
+			}
 
-					if (system.occ(n,m)==0)
-					{
-						trial.flip(i,j);
-						trial.flip(n,m);
+			double delE = trial_E - E_local;
+			double alpha = ((double) rand()/(double)RAND_MAX);
 
-						double theta=system.angle(i,j);
-						trial.rotate(i,j,0.0);
-						trial.rotate(n,m,theta);
-					}
-				}
-				else if (flag==2) // translation+rotation
-				{
-					int n = rand() % N;
-					int m = rand() % N;
-
-					if (system.occ(n,m)==0)
-					{
-						double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
-						
-						trial.flip(i,j);
-						trial.flip(n,m);
-
-						trial.rotate(i,j,0.0);
-						trial.rotate(n,m,theta);
-
-					}
-				}
-
-				double trial_E = (trial.*Hamiltonian)();
-				double delE = trial_E - E;
-				double alpha = ((double) rand()/(double)RAND_MAX);
-
-				double U= exp(-1*delE/T);
-				if (alpha < min(1.0,U))
-				{
-					E=trial_E;
-					system=trial;
-				}
+			double U= exp(-1*delE/T);
+			if (alpha < min(1.0,U))
+			{
+				system=trial;
 			}
 		}
 	}
@@ -321,9 +275,16 @@ void run_config()
 	       Temp;
 	for (int t=0; t<Time; t++)
 	{
-		slope=10.0/((double) Time);
+		slope=10.0/(60000.0);
 		Temp=1.0/cosh(0.4*slope*((double) t));
 		Metropolis(crystal,Temp,Edat,pbc);
+
+		// if (t%500==0)
+		// {
+		// 	stringstream photo;
+		// 	photo<<"photo_"<<t;
+		// 	print_sys(crystal,photo.str(),bcg);
+		// }
 	}
 
 	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;

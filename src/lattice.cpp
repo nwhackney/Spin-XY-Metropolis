@@ -78,17 +78,49 @@ double lattice::H()
 			if (i!=N-1)
 			{
 				int weight=spins[i][j].occ*spins[i+1][j].occ;
-				H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight; // Still have to add external field...
+				H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight;
 				H+=K*weight;
 			}
 
 			if (j!=N-1)
 			{
 				int weight=spins[i][j].occ*spins[i][j+1].occ;
-				H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; // Still have to add external field...
+				H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight;
 				H+=K*weight;
 			}
 		}
+	}
+
+	return H;
+}
+
+double lattice::H_local(int i, int j)
+{
+	double H=0.0;
+
+	if (i!=0)
+	{
+		int weight=spins[i][j].occ*spins[i-1][j].occ;
+		H+=J*cos(spins[i][j].angle-spins[i-1][j].angle-f*j)*weight;
+		H+=K*weight;
+	}
+	if (i!=N-1)
+	{
+		int weight=spins[i][j].occ*spins[i+1][j].occ;
+		H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight;
+		H+=K*weight;
+	}
+	if (j!=0)
+	{
+		int weight=spins[i][j].occ*spins[i][j-1].occ;
+		H+=J*cos(spins[i][j].angle-spins[i][j-1].angle+f*i)*weight;
+		H+=K*weight;
+	}
+	if (j!=N-1)
+	{
+		int weight=spins[i][j].occ*spins[i][j+1].occ;
+		H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight;
+		H+=K*weight;
 	}
 
 	return H;
@@ -104,26 +136,26 @@ double lattice::H_periodic()
 			if (i!=N-1)
 			{
 				int weight=spins[i][j].occ*spins[i+1][j].occ;
-				H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight; // Still have to add external field...
+				H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight;
 				H+=K*weight;
 			}
 			else
 			{
 				int weight=spins[i][j].occ*spins[0][j].occ;
-				H+=J*cos(spins[i][j].angle-spins[0][j].angle+f*j)*weight; // Still have to add external field...
+				H+=J*cos(spins[i][j].angle-spins[0][j].angle+f*j)*weight; 
 				H+=K*weight;
 			}
 
 			if (j!=N-1)
 			{
 				int weight=spins[i][j].occ*spins[i][j+1].occ;
-				H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; // Still have to add external field...
+				H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; 
 				H+=K*weight;
 			}
 			else
 			{
 				int weight=spins[i][j].occ*spins[i][0].occ;
-				H+=J*cos(spins[i][j].angle-spins[i][0].angle-f*i)*weight; // Still have to add external field...
+				H+=J*cos(spins[i][j].angle-spins[i][0].angle-f*i)*weight;
 				H+=K*weight;
 			}
 		}

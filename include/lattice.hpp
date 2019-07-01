@@ -20,13 +20,13 @@ class lattice
 		void init(int Number, int occupancy);
 		void flip(int i, int j);
 		void rotate(int i, int j, double theta);
-		/* void print_sys(std::string file_name); */
 
 		int occ(int i, int j);
 		int how_many();
 
 		double angle(int i, int j);
 		double H();
+		double H_local(int i, int j);
 		double H_periodic();
 		double Bond_Energy(int i, int j, int n, int m);
 
