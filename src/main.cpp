@@ -365,9 +365,9 @@ void run_config()
 	       Temp;
 	for (int t=0; t<Time; t++)
 	{
-		slope=10.0/(60000.0);
+		slope=10.0/((double) Time);
 		Temp=1.0/cosh(0.4*slope*((double) t));
-		Metropolis_no_sweep(crystal,Temp,Edat,pbc);
+		Metropolis(crystal,Temp,Edat,pbc);
 
 		// if (t%500==0)
 		// {
