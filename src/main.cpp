@@ -212,6 +212,97 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int pbc=0)
 	}
 }
 
+void Metropolis_no_sweep(lattice &system, double T, ofstream &Efile, int pbc=0)
+{
+	double (lattice::*Hamiltonian)();
+	double (lattice::*local_Hamiltonian)(int, int);
+
+	if (pbc==0) {Hamiltonian = &lattice::H; local_Hamiltonian = &lattice::H_local; }
+	else if (pbc==1){Hamiltonian = &lattice::H_periodic;}
+
+	double E = (system.*Hamiltonian)();
+	Efile<<E<<endl;
+
+	int N=system.how_many()*system.how_many();
+	int count=0;
+	while (count<N)
+	{
+
+		int i=rand()%N;
+		int j=rand()%N;
+
+
+		lattice trial = system;
+		double trial_E;
+		double E_local;
+
+		if (system.occ(i,j)==0) {continue;}
+
+		int flag = rand() % 3;
+		if (flag==0) // rotation
+		{
+			double width = 0.2*exp(-0.5*T);
+			double theta = Box_Muller(system.angle(i,j),width);
+
+			trial.rotate(i,j,theta);
+			trial_E=(trial.*local_Hamiltonian)(i,j);
+			E_local=(system.*local_Hamiltonian)(i,j);
+		}
+		else if (flag==1) // translation
+		{
+			int n = rand() % N;
+			int m = rand() % N;
+
+			if (system.occ(n,m)==0)
+			{
+				trial.flip(i,j);
+				trial.flip(n,m);
+
+				double theta=system.angle(i,j);
+				trial.rotate(i,j,0.0);
+				trial.rotate(n,m,theta);
+
+				trial_E=(trial.*local_Hamiltonian)(i,j);
+				trial_E+=(trial.*local_Hamiltonian)(n,m);
+				E_local=(system.*local_Hamiltonian)(i,j);
+				E_local+=(system.*local_Hamiltonian)(n,m);
+			}
+		}
+		else if (flag==2) // translation+rotation
+		{
+			int n = rand() % N;
+			int m = rand() % N;
+
+			if (system.occ(n,m)==0)
+			{
+				double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+				
+				trial.flip(i,j);
+				trial.flip(n,m);
+
+				trial.rotate(i,j,0.0);
+				trial.rotate(n,m,theta);
+
+				trial_E=(trial.*local_Hamiltonian)(i,j);
+				trial_E+=(trial.*local_Hamiltonian)(n,m);
+				E_local=(system.*local_Hamiltonian)(i,j);
+				E_local+=(system.*local_Hamiltonian)(n,m);
+			}
+		}
+
+		double delE = trial_E - E_local;
+		double alpha = ((double) rand()/(double)RAND_MAX);
+
+		double U= exp(-1*delE/T);
+		if (alpha < min(1.0,U))
+		{
+			system=trial;
+		}
+
+		count++;
+	}
+}
+
 void run_config()
 {
 	std::ifstream ifs("config.toml");
@@ -277,7 +368,7 @@ void run_config()
 	{
 		slope=10.0/(60000.0);
 		Temp=1.0/cosh(0.4*slope*((double) t));
-		Metropolis(crystal,Temp,Edat,pbc);
+		Metropolis_no_sweep(crystal,Temp,Edat,pbc);
 
 		// if (t%500==0)
 		// {
