@@ -223,7 +223,7 @@ void Metropolis_no_sweep(lattice &system, double T, ofstream &Efile, int pbc=0)
 	double E = (system.*Hamiltonian)();
 	Efile<<E<<endl;
 
-	int N_square=system.how_many();
+	int N=system.how_many();
 	int count=0;
 	while (count<N*N)
 	{
