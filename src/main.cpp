@@ -100,6 +100,74 @@ void print_sys(lattice &system, string file_name, int bond_flag=0)
 	out<<"plot NaN"<<endl;
 }
 
+void print_sys_color(lattice &system, string file_name)
+{
+	stringstream file;
+	file<<file_name<<".p";
+
+	ofstream out;
+	out.open(file.str());
+
+	out<<"set terminal png"<<endl;
+	out<<"set output '"<<file_name<<"'"<<endl;
+	out<<"set key off"<<endl;
+	out<<"set xrange [0:53]"<<endl;
+	out<<"set yrange [0:53]"<<endl;
+	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<endl;
+
+	double d=2.5;
+	double theta,
+	       x,
+	       y,
+	       dx,
+	       dy;
+
+	int N=system.how_many();
+	int plaq=1;
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+			if (system.occ(i,j)==1)
+			{
+
+				x=(i+1)*d;
+				y=(j+1)*d;
+
+				theta=system.angle(i,j);
+				dx=cos(theta);
+				dy=sin(theta);
+
+				double E=system.H_local(i,j);
+				double w=E/-6.0;
+
+				// double R=255.0-205.0*w*w;
+				// double G=0.0;
+				// double B=50.0+205.0*w*w;
+
+				int aR = 255;   int aG = 0; int aB=0;  // RGB for our 1st color (blue in this case).
+  				int bR = 0; int bG = 0; int bB=255;    // RGB for our 2nd color (red in this case).
+  
+  				float R   = (float)(bR - aR) * w + aR;      // Evaluated as -255*value + 255.
+ 				float G = (float)(bG - aG) * w + aG;      // Evaluates as 0.
+  				float B  = (float)(bB - aB) * w + aB; 
+
+				stringstream Red;
+				stringstream Green;
+				stringstream Blue;
+
+				Red<<hex<<(int) R;
+				Green<<hex<<(int) G;
+				Blue<<hex<<(int) B;
+
+				out<<"set arrow from "<<x<<","<<y<<" to "<<x+dx<<","<<y+dy<<" as 1 lc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<endl;
+			}
+		}
+	}
+
+	out<<"plot NaN"<<endl;
+}
+
 double Box_Muller(double mu, double sigma)
 {
 	static const double epsilon = std::numeric_limits<double>::min();
@@ -324,12 +392,14 @@ void run_config()
 	const toml::Value* PBC = v.find("PBC");
 	const toml::Value* outp = v.find("output");
 	const toml::Value* BCG = v.find("Bond_Color_Grid");
+	const toml::Value*  W = v.find("Width");
 
 	int N= Np->as<int>();
 	int occ= Occp->as<int>();
 	int Time=Tp->as<int>();
 	int pbc=PBC->as<int>();
 	int bcg=BCG->as<int>();
+	double w=W->as<double>();
 	double J=Jp->as<double>();
 	double K=Kp->as<double>();
 	double f=fp->as<double>();
@@ -366,7 +436,7 @@ void run_config()
 	for (int t=0; t<Time; t++)
 	{
 		slope=10.0/((double) Time);
-		Temp=1.0/cosh(0.4*slope*((double) t));
+		Temp=1.0/cosh(w*slope*((double) t));
 		Metropolis(crystal,Temp,Edat,pbc);
 
 		// if (t%500==0)
@@ -397,7 +467,7 @@ void run_config()
 
 	Edat.close();
 
-	print_sys(crystal,out.str(),bcg);
+	print_sys_color(crystal,out.str());
 
 }
 
