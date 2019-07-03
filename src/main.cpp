@@ -410,8 +410,6 @@ void run_config()
 	if (pbc==0) {Hamiltonian = &lattice::H;}
 	else if (pbc==1){Hamiltonian = &lattice::H_periodic;}
 
-	int i=0;
-
 	lattice crystal;
 	crystal.set_const(J,K,f);
 	crystal.init(N,occ);
@@ -420,9 +418,9 @@ void run_config()
 	//print_sys(crystal,"init");
 
 	stringstream Efile;
-	Efile<<"Energy_"<<i<<".dat";
+	Efile<<"Energy_"<<out_file<<".dat";
 	stringstream out;
-	out<<out_file<<"_"<<i;
+	out<<out_file;
 
 	ofstream Edat;
 	Edat.open(Efile.str());
@@ -453,7 +451,7 @@ void run_config()
 	cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 
 	stringstream info;
-	info<<"info_"<<i<<".dat";
+	info<<"info_"<<out_file<<".dat";
 
 	ofstream inf;
 	inf.open(info.str());
