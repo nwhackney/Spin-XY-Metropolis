@@ -31,40 +31,15 @@ int main()
 
 		config.close();
 
-		stringstream ssmkdir;
-		ssmkdir<<"mkdir "<<directory.str();
-		string smkdir=ssmkdir.str();
-		const char *mkd = smkdir.c_str(); 
-		system(mkd);
-
-		stringstream sscopy_config;
-		sscopy_config<<"cp config.toml "<<directory.str();
-		string scopy_config=sscopy_config.str();
-		const char *command = scopy_config.c_str(); 
-		system(command);
-
-		stringstream sscopy_ex;
-		sscopy_ex<<"cp a.out "<<directory.str();
-		string scopy_ex=sscopy_ex.str();
-		const char *cpcommand = scopy_ex.c_str(); 
-		system(cpcommand);
-
-		// stringstream sscd;
-		// sscd<<"cd "<<directory.str();
-		// string scd=sscd.str();
-		// const char *cdcommand = scd.c_str(); 
-		// system(cdcommand);
-
 		stringstream job_name;
 		job_name<<"f_"<<f;
 
 		stringstream ssbsub;
-		ssbsub<<"bsub -n 1 -R rusage[mem=2048] -q long -W 24:00 -J"<< job_name.str()<<" ./"<<directory.str()<<"/a.out";
+		ssbsub<<"bsub -n 1 -R rusage[mem=2048] -q long -W 24:00 -J"<< job_name.str()<<" ./a.out";
 		string sbsub=ssbsub.str();
 		const char *bscommand = sbsub.c_str(); 
 		system(bscommand);
 
-		// system("cd ..");
 	}
 
 	return 0;
