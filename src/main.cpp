@@ -114,8 +114,8 @@ void print_sys_color(lattice &system, string file_name)
 	out<<"set terminal png"<<endl;
 	out<<"set output '"<<png.str()<<"'"<<endl;
 	out<<"set key off"<<endl;
-	out<<"set xrange [0:53]"<<endl;
-	out<<"set yrange [0:53]"<<endl;
+	out<<"set xrange [0:153]"<<endl;
+	out<<"set yrange [0:153]"<<endl;
 	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<endl;
 
 	double d=2.5;
