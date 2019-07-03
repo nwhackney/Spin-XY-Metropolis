@@ -108,8 +108,11 @@ void print_sys_color(lattice &system, string file_name)
 	ofstream out;
 	out.open(file.str());
 
+	stringstream png;
+	png<<file_name<<".png";
+
 	out<<"set terminal png"<<endl;
-	out<<"set output '"<<file_name<<"'"<<endl;
+	out<<"set output '"<<png.str()<<"'"<<endl;
 	out<<"set key off"<<endl;
 	out<<"set xrange [0:53]"<<endl;
 	out<<"set yrange [0:53]"<<endl;
