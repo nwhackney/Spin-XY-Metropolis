@@ -142,18 +142,19 @@ void print_sys_color(lattice &system, string file_name)
 				dy=sin(theta);
 
 				double E=system.H_local(i,j);
-				double w=E/-6.0;
+				cout<<E<<endl;
+				double w=(E+2.0)/-4.0;
 
-				// double R=255.0-205.0*w*w;
-				// double G=0.0;
-				// double B=50.0+205.0*w*w;
+				double R=255.0-255.0*w*w;
+				double G=0.0;
+				double B=0.0+255.0*w*w;
 
-				int aR = 255;   int aG = 0; int aB=0;  // RGB for our 1st color (blue in this case).
-  				int bR = 0; int bG = 0; int bB=255;    // RGB for our 2nd color (red in this case).
+				// int aR = 0;   int aG = 0; int aB=255;  // RGB for our 1st color (blue in this case).
+  		// 		int bR = 255; int bG = 0; int bB=0;    // RGB for our 2nd color (red in this case).
   
-  				float R   = (float)(bR - aR) * w + aR;      // Evaluated as -255*value + 255.
- 				float G = (float)(bG - aG) * w + aG;      // Evaluates as 0.
-  				float B  = (float)(bB - aB) * w + aB; 
+  		// 		float R   = (float)(bR - aR) * w + aR;      // Evaluated as -255*value + 255.
+ 			// 	float G = (float)(bG - aG) * w + aG;      // Evaluates as 0.
+  		// 		float B  = (float)(bB - aB) * w + aB; 
 
 				stringstream Red;
 				stringstream Green;
@@ -169,6 +170,25 @@ void print_sys_color(lattice &system, string file_name)
 	}
 
 	out<<"plot NaN"<<endl;
+}
+
+void print_sys_data(lattice &system, string file_name)
+{
+	stringstream file;
+	file<<file_name<<"_data.dat";
+
+	ofstream out;
+	out.open(file.str());
+
+	int i=system.how_many();
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+			out<<i<<" "<<j<<" "<<system.angle(i,j)<<" "<<system.local_Hamiltonian(i,j)<<endl;
+		}
+	}
+	out.close();
 }
 
 double Box_Muller(double mu, double sigma)
@@ -469,6 +489,7 @@ void run_config()
 	Edat.close();
 
 	print_sys_color(crystal,out.str());
+	print_sys_data(crystal.out.str());
 
 }
 
