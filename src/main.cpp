@@ -22,8 +22,8 @@ void print_sys(lattice &system, string file_name, int bond_flag=0)
 	out<<"set terminal png"<<endl;
 	out<<"set output '"<<file_name<<"'"<<endl;
 	out<<"set key off"<<endl;
-	out<<"set xrange [0:53]"<<endl;
-	out<<"set yrange [0:53]"<<endl;
+	out<<"set xrange [0:203]"<<endl;
+	out<<"set yrange [0:203]"<<endl;
 	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2 lc 'black'"<<endl;
 	out<<"set style arrow 2 nohead "<<endl;
 
@@ -114,8 +114,8 @@ void print_sys_color(lattice &system, string file_name)
 	out<<"set terminal png"<<endl;
 	out<<"set output '"<<png.str()<<"'"<<endl;
 	out<<"set key off"<<endl;
-	out<<"set xrange [0:153]"<<endl;
-	out<<"set yrange [0:153]"<<endl;
+	out<<"set xrange [0:203]"<<endl;
+	out<<"set yrange [0:203]"<<endl;
 	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<endl;
 
 	double d=2.5;
@@ -180,12 +180,12 @@ void print_sys_data(lattice &system, string file_name)
 	ofstream out;
 	out.open(file.str());
 
-	int i=system.how_many();
+	int N=system.how_many();
 	for (int i=0; i<N; i++)
 	{
 		for (int j=0; j<N; j++)
 		{
-			out<<i<<" "<<j<<" "<<system.angle(i,j)<<" "<<system.local_Hamiltonian(i,j)<<endl;
+			out<<i<<" "<<j<<" "<<system.angle(i,j)<<" "<<system.H_local(i,j)<<endl;
 		}
 	}
 	out.close();
@@ -489,7 +489,7 @@ void run_config()
 	Edat.close();
 
 	print_sys_color(crystal,out.str());
-	print_sys_data(crystal.out.str());
+	print_sys_data(crystal,out.str());
 
 }
 
