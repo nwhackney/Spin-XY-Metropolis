@@ -185,6 +185,7 @@ void print_sys_data(lattice &system, string file_name)
 	{
 		for (int j=0; j<N; j++)
 		{
+			if (system.occ(i,j)==0) {continue;}
 			out<<i<<" "<<j<<" "<<system.angle(i,j)<<" "<<system.H_local(i,j)<<endl;
 		}
 	}
