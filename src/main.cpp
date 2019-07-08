@@ -239,7 +239,8 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int pbc=0)
 
 			if (system.occ(i,j)==0) {continue;}
 
-			int flag = rand() % 2;
+			//int flag = rand() % 3;
+			int flag = 0;
 			if (flag==0) // rotation
 			{
 				double width = 0.2*exp(-0.5*T);
@@ -435,7 +436,8 @@ void run_config()
 
 	lattice crystal;
 	crystal.set_const(J,K,f);
-	crystal.init(N,occ);
+	//crystal.init(N,occ);
+	crystal.rand_square_init(N);
 
 	//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	//print_sys(crystal,"init");
@@ -459,13 +461,6 @@ void run_config()
 		slope=10.0/((double) Time);
 		Temp=1.0/cosh(w*slope*((double) t));
 		Metropolis(crystal,Temp,Edat,pbc);
-
-		// if (t%500==0)
-		// {
-		// 	stringstream photo;
-		// 	photo<<"photo_"<<t;
-		// 	print_sys(crystal,photo.str(),bcg);
-		// }
 	}
 
 	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
@@ -488,12 +483,12 @@ void run_config()
 
 	Edat.close();
 
-	print_sys_color(crystal,out.str());
+	print_sys(crystal,out.str());
 	print_sys_data(crystal,out.str());
 
 	HK clump(crystal);
 	clump.Find_Cluster();
-	clump.quick_print();
+	clump.print_cluster();
 }
 
 int main()

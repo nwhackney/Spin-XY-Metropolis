@@ -35,6 +35,34 @@ void lattice::init(int Number, int occupancy)
 	}
 }
 
+void lattice::rand_square_init(int Number)
+{
+	N=Number;
+
+	int i_init=rand()%55 + 1;
+	int j_init=rand()%55 + 1;
+
+	site Null;
+	Null.occ=0;
+	Null.angle=0.0;
+
+	spins.resize(Number);
+	for( auto &it : spins )
+	{
+		it.resize(Number, Null);
+	}
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+i_init][j+j_init].occ=1;
+			spins[i+i_init][j+j_init].angle=theta;
+		}
+	}
+}
+
 void lattice::set_const(double j, double k, double frustration)
 {
 	J=j;
