@@ -8,6 +8,7 @@
 
 #include "lattice.cpp"
 #include "../include/tinytoml-master/include/toml/toml.h"
+#include "Hoshen_Kopelman.cpp"
 
 using namespace std;
 
@@ -142,19 +143,11 @@ void print_sys_color(lattice &system, string file_name)
 				dy=sin(theta);
 
 				double E=system.H_local(i,j);
-				cout<<E<<endl;
 				double w=(E+2.0)/-4.0;
 
 				double R=255.0-255.0*w*w;
 				double G=0.0;
 				double B=0.0+255.0*w*w;
-
-				// int aR = 0;   int aG = 0; int aB=255;  // RGB for our 1st color (blue in this case).
-  		// 		int bR = 255; int bG = 0; int bB=0;    // RGB for our 2nd color (red in this case).
-  
-  		// 		float R   = (float)(bR - aR) * w + aR;      // Evaluated as -255*value + 255.
- 			// 	float G = (float)(bG - aG) * w + aG;      // Evaluates as 0.
-  		// 		float B  = (float)(bB - aB) * w + aB; 
 
 				stringstream Red;
 				stringstream Green;
@@ -185,8 +178,14 @@ void print_sys_data(lattice &system, string file_name)
 	{
 		for (int j=0; j<N; j++)
 		{
-			if (system.occ(i,j)==0) {continue;}
-			out<<i<<" "<<j<<" "<<system.angle(i,j)<<" "<<system.H_local(i,j)<<endl;
+			if (system.occ(i,j)==0)
+			{
+				out<<i<<" "<<j<<" "<<" -1 "<<" 0"<<endl;
+			}
+			else
+			{
+				out << i << " " << j << " " << system.angle(i,j) << " " << system.H_local(i,j) << endl;
+			}
 		}
 	}
 	out.close();
@@ -240,7 +239,7 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int pbc=0)
 
 			if (system.occ(i,j)==0) {continue;}
 
-			int flag = rand() % 3;
+			int flag = rand() % 2;
 			if (flag==0) // rotation
 			{
 				double width = 0.2*exp(-0.5*T);
@@ -492,6 +491,9 @@ void run_config()
 	print_sys_color(crystal,out.str());
 	print_sys_data(crystal,out.str());
 
+	HK clump(crystal);
+	clump.Find_Cluster();
+	clump.quick_print();
 }
 
 int main()
