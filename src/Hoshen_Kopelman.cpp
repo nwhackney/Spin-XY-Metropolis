@@ -137,3 +137,56 @@ int HK::cluster_size(int label)
 	return count;
 }
 
+std::vector<double> HK::principle_moments(int label)
+{
+	std::vector<double> moments;
+	std::vector<xy> coord;
+
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+			if (matrix[i][j]==label)
+			{
+				xy temp;
+				temp.x=(double) i; temp.y=(double) j;
+				coord.push_back(temp);
+			}
+		}
+	}
+
+	double C=1.0/(2.0*((double) N)*((double) N));
+
+	double Sxx=0.0,
+		  Sxy=0.0,
+		  Syx=0.0,
+		  Syy=0.0;
+
+	for (int n=0; n<coord.size(); n++)
+	{
+		for (int m=0; m<coord.size(); m++)
+		{
+			Sxx+=(coord[n].x-coord[m].x)*(coord[n].x-coord[m].x);
+			Sxy+=(coord[n].x-coord[m].x)*(coord[n].y-coord[m].y);
+			Syx+=(coord[n].y-coord[m].y)*(coord[n].x-coord[m].x);
+			Syy+=(coord[n].y-coord[m].y)*(coord[n].y-coord[m].y);
+		}
+	}
+
+	Sxx=C*Sxx;
+	Sxy=C*Sxy;
+	Syx=C*Syx;
+	Syy=C*Syy;
+
+	double Trace = Sxx + Syy;
+	double Det = Sxx*Syy-Sxy*Syx;
+
+	double lambda1=0.5*Trace+sqrt(0.25*Trace*Trace - Det);
+	double lambda2=0.5*Trace-sqrt(0.25*Trace*Trace - Det);
+
+	moments.push_back(lambda1);
+	moments.push_back(lambda2);
+
+	return moments;
+}
+

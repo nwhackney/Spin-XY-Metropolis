@@ -1,3 +1,4 @@
+#include "xy.hpp"
 
 class HK
 {
@@ -13,4 +14,5 @@ public:
 	void print_cluster();
 	int cluster_count();
 	int cluster_size(int label);
+	std::vector<double> principle_moments(int label);
 };
