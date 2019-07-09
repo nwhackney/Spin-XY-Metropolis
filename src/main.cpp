@@ -145,7 +145,7 @@ void print_sys(lattice &system, string file_name)
 				Green<<hex<<(int) G;
 				Blue<<hex<<(int) B;
 
-				out<<"set arrow from "<<x<<","<<y<<" to "<<x+dx<<","<<y+dy<<" as 1 lc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<endl;
+				//out<<"set arrow from "<<x<<","<<y<<" to "<<x+dx<<","<<y+dy<<" as 1 lc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<endl;
 				out<<"set arrow from "<<x<<","<<y<<" to "<<x+dx<<","<<y+dy<<" as 1 lc 'black'"<<endl;
 			}
 		}
@@ -457,6 +457,11 @@ void run_config()
 	cout<<"Time: "<<duration<<endl;
 	cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 
+	HK clump(crystal);
+	clump.Find_Cluster();
+	clump.print_cluster();
+	int NC=clump.cluster_count();
+
 	stringstream info;
 	info<<"info_"<<out_file<<".dat";
 
@@ -468,17 +473,19 @@ void run_config()
 	inf<<"J="<<J<<" K="<<K<<" f="<<f<<endl;
 	inf<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	inf<<"Time: "<<duration<<endl;
+	inf<<"Number of Clusters: "<<NC<<endl;
+	for (int n=1; n<=NC;n++)
+	{
+		inf<<"	cluster "<<n<<": "<<clump.cluster_size(n)<<" spin sites"<<endl;
+	}
 	inf.close();
 
 	Edat.close();
 
-	print_bonds("bonds");
+	print_bonds(crystal,"bonds");
 	print_sys(crystal,out.str());
 	print_sys_data(crystal,out.str());
 
-	HK clump(crystal);
-	clump.Find_Cluster();
-	clump.print_cluster();
 }
 
 int main()

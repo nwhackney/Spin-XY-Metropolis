@@ -26,12 +26,11 @@ int unionize(int x, int y, std::vector<int> &labels)
 HK::HK(lattice init)
 {
 	system=init;
+	N=system.how_many();	
 }
 
 void HK::Find_Cluster()
 {
-	int N=system.how_many();
-
 	for (int i=0; i<N; i++)
 	{
 		labels.push_back(i);
@@ -86,22 +85,55 @@ void HK::Find_Cluster()
 void HK::print_cluster()
 {
 	ofstream file;
-	file.open("thing.p");
+	file.open("cluster.p");
 
 	file<<"set terminal png"<<endl;
-	file<<"set output 'thing.png'"<<endl;
+	file<<"set output 'cluster.png'"<<endl;
 	file<<"set key off"<<endl;
-	file<<"set xrange [0:53]"<<endl;
-	file<<"set yrange [0:53]"<<endl;
+	file<<"set xrange [0:203]"<<endl;
+	file<<"set yrange [0:203]"<<endl;
+	file<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<endl;
 
 	for (int i=0; i<system.how_many(); i++)
 	{
 		for (int j=0; j<system.how_many(); j++)
 		{
 			if (matrix[i][j]==0) {continue;}
-			file<<"set label '"<<matrix[i][j]<<"' at "<<(i+1)*2.5<<","<<(j+1)*2.5<<endl;
+			
+			double x=(i+1)*2.5;
+			double y=(j+1)*2.5;
+
+			double theta=system.angle(i,j);
+			double dx=cos(theta);
+			double dy=sin(theta);
+
+			file<<"set arrow from "<<x<<","<<y<<" to "<<x+dx<<","<<y+dy<<" as 1 lc "<<matrix[i][j]<<endl;
 		}
 	}
 	file<<"plot NaN"<<endl;
 	file.close();
 }
+
+int HK::cluster_count()
+{
+	int max_label=0;
+	for (int i=0; i<N; i++)
+	{
+		if (labels[i]>max_label) {max_label++;}
+	}
+	return max_label;
+}
+
+int HK::cluster_size(int label)
+{
+	int count=0;
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+			if (matrix[i][j]==label) {count++;}
+		}
+	}
+	return count;
+}
+
