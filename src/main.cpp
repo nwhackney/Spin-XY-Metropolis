@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void print_sys(lattice &system, string file_name, int bond_flag=0)
+void print_bonds(lattice &system, string file_name)
 {
 	stringstream file;
 	file<<file_name<<".p";
@@ -43,56 +43,44 @@ void print_sys(lattice &system, string file_name, int bond_flag=0)
 		{
 			if (system.occ(i,j)==1)
 			{
-				x=(i+1)*d;
-				y=(j+1)*d;
+				double Beni=0.0;
+				double Benj=0.0;
+				if (i!=N-1) {Beni=system.Bond_Energy(i,j,i+1,j);}
+				if (j!=N-1) {Benj=system.Bond_Energy(i,j,i,j+1);}
 
-				theta=system.angle(i,j);
-				dx=cos(theta);
-				dy=sin(theta);
-
-				out<<"set arrow from "<<x<<","<<y<<" to "<<x+dx<<","<<y+dy<<" as 1"<<endl;
-
-				if (bond_flag==1)
+				if (Beni!=0.0)
 				{
-					double Beni=0.0;
-					double Benj=0.0;
-					if (i!=N-1) {Beni=system.Bond_Energy(i,j,i+1,j);}
-					if (j!=N-1) {Benj=system.Bond_Energy(i,j,i,j+1);}
+					double w=-2.0*Beni;
+					double R=255.0-205.0*w*w*w;
+					double G=0.0;
+					double B=50.0+205.0*w*w*w;
 
-					if (Beni!=0.0)
-					{
-						double w=-2.0*Beni;
-						double R=255.0-205.0*w*w*w;
-						double G=0.0;
-						double B=50.0+205.0*w*w*w;
+					stringstream Red;
+					stringstream Green;
+					stringstream Blue;
 
-						stringstream Red;
-						stringstream Green;
-						stringstream Blue;
+					Red<<hex<<(int) R;
+					Green<<hex<<(int) G;
+					Blue<<hex<<(int) B;
 
-						Red<<hex<<(int) R;
-						Green<<hex<<(int) G;
-						Blue<<hex<<(int) B;
+					out<< "set arrow from "<<x<<","<<y<<" to "<<x+d<<","<<y<<" as 2 lc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<endl;
+				}
+				if (Benj!=0)
+				{
+					double w=-2.0*Benj;
+					double R=255.0-205.0*w*w*w;
+					double G=0.0;
+					double B=50.0+205.0*w*w*w;
 
-						out<< "set arrow from "<<x<<","<<y<<" to "<<x+d<<","<<y<<" as 2 lc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<endl;
-					}
-					if (Benj!=0)
-					{
-						double w=-2.0*Benj;
-						double R=255.0-205.0*w*w*w;
-						double G=0.0;
-						double B=50.0+205.0*w*w*w;
+					stringstream Red;
+					stringstream Green;
+					stringstream Blue;
 
-						stringstream Red;
-						stringstream Green;
-						stringstream Blue;
+					Red<<hex<<(int) R;
+					Green<<hex<<(int) G;
+					Blue<<hex<<(int) B;
 
-						Red<<hex<<(int) R;
-						Green<<hex<<(int) G;
-						Blue<<hex<<(int) B;
-
-						out<< "set arrow from "<<x<<","<<y<<" to "<<x<<","<<y+d<<" as 2 lc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<endl;
-					}
+					out<< "set arrow from "<<x<<","<<y<<" to "<<x<<","<<y+d<<" as 2 lc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<endl;
 				}
 			}
 		}
@@ -101,7 +89,7 @@ void print_sys(lattice &system, string file_name, int bond_flag=0)
 	out<<"plot NaN"<<endl;
 }
 
-void print_sys_color(lattice &system, string file_name)
+void print_sys(lattice &system, string file_name)
 {
 	stringstream file;
 	file<<file_name<<".p";
@@ -158,6 +146,7 @@ void print_sys_color(lattice &system, string file_name)
 				Blue<<hex<<(int) B;
 
 				out<<"set arrow from "<<x<<","<<y<<" to "<<x+dx<<","<<y+dy<<" as 1 lc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<endl;
+				out<<"set arrow from "<<x<<","<<y<<" to "<<x+dx<<","<<y+dy<<" as 1 lc 'black'"<<endl;
 			}
 		}
 	}
@@ -483,6 +472,7 @@ void run_config()
 
 	Edat.close();
 
+	print_bonds("bonds");
 	print_sys(crystal,out.str());
 	print_sys_data(crystal,out.str());
 

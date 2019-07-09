@@ -39,8 +39,8 @@ void lattice::rand_square_init(int Number)
 {
 	N=Number;
 
-	int i_init=rand()%55 + 1;
-	int j_init=rand()%55 + 1;
+	int i_init=1;
+	int j_init=1;
 
 	site Null;
 	Null.occ=0;
