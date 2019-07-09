@@ -51,9 +51,9 @@ void print_bonds(lattice &system, string file_name)
 				if (Beni!=0.0)
 				{
 					double w=-2.0*Beni;
-					double R=255.0-205.0*w*w*w;
+					double R=255.0-205.0*w;
 					double G=0.0;
-					double B=50.0+205.0*w*w*w;
+					double B=50.0+205.0*w;
 
 					stringstream Red;
 					stringstream Green;
@@ -476,12 +476,14 @@ void run_config()
 	inf<<"Number of Clusters: "<<NC<<endl<<endl;
 	for (int n=1; n<=NC;n++)
 	{
+		int size = clump.cluster_size(n);
+		if (size == 0) {continue;}
 		inf<<"Cluster "<<n<<":"<<endl;
-		inf<<"	"<<clump.cluster_size(n)<<" spin sites"<<endl;
+		inf<<"	"<<size<<" spin sites"<<endl;
 		vector<double> pm = clump.principle_moments(n);
 		inf<<"	principle moment 1: "<<pm[0]<<endl;
 		inf<<"	principle moment 2: "<<pm[1]<<endl;
-		inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl;
+		inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl<<endl;
 	}
 	inf.close();
 
