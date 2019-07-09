@@ -473,10 +473,15 @@ void run_config()
 	inf<<"J="<<J<<" K="<<K<<" f="<<f<<endl;
 	inf<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	inf<<"Time: "<<duration<<endl;
-	inf<<"Number of Clusters: "<<NC<<endl;
+	inf<<"Number of Clusters: "<<NC<<endl<<endl;
 	for (int n=1; n<=NC;n++)
 	{
-		inf<<"	cluster "<<n<<": "<<clump.cluster_size(n)<<" spin sites"<<endl;
+		inf<<"Cluster "<<n<<":"<<endl;
+		inf<<"	"<<clump.cluster_size(n)<<" spin sites"<<endl;
+		vector<double> pm = clump.principle_moments(n);
+		inf<<"	principle moment 1: "<<pm[0]<<endl;
+		inf<<"	principle moment 2: "<<pm[1]<<endl;
+		inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl;
 	}
 	inf.close();
 
