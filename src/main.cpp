@@ -448,12 +448,12 @@ void run_config()
 	
 	double slope,
 	       Temp;
-	// for (int t=0; t<Time; t++)
-	// {
-	// 	slope=10.0/((double) Time);
-	// 	Temp=1.0/cosh(w*slope*((double) t));
-	// 	Metropolis(crystal,Temp,Edat,pbc);
-	// }
+	for (int t=0; t<Time; t++)
+	{
+		slope=10.0/((double) Time);
+		Temp=1.0/cosh(w*slope*((double) t));
+		Metropolis(crystal,Temp,Edat,pbc);
+	}
 
 	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 
