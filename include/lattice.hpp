@@ -30,5 +30,6 @@ class lattice
 		double H_local(int i, int j);
 		double H_periodic();
 		double Bond_Energy(int i, int j, int n, int m);
+		double H_Neighbor(int i, int j);
 
 };

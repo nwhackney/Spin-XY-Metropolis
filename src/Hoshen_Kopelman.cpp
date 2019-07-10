@@ -20,7 +20,7 @@ int find(int x, std::vector<int> &labels)
 
 int unionize(int x, int y, std::vector<int> &labels)
 {
- 	return labels[find(x, labels)] = find(y, labels);
+	return labels[find(x, labels)] = find(y, labels);
 }
 
 HK::HK(lattice init)
@@ -80,6 +80,15 @@ void HK::Find_Cluster()
 			}
 		}
 	}
+
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+			if (matrix[i][j]==0) {continue;}
+			matrix[i][j]=find(matrix[i][j],labels);
+		}
+	}
 }
 
 void HK::print_cluster()
@@ -137,6 +146,23 @@ int HK::cluster_size(int label)
 	return count;
 }
 
+double HK::cluster_energy(int label)
+{
+	double Energy;
+
+	for (int i=0; i<system.how_many(); i++)
+	{
+		for (int j=0; j< system.how_many(); j++)
+		{
+			if (matrix[i][j]==label)
+			{
+				Energy+=system.H_Neighbor(i,j);
+			}
+		}
+	}
+	return Energy;
+}
+
 std::vector<double> HK::principle_moments(int label)
 {
 	std::vector<double> moments;
@@ -155,7 +181,8 @@ std::vector<double> HK::principle_moments(int label)
 		}
 	}
 
-	double C=1.0/(2.0*((double) N)*((double) N));
+	double NL=cluster_size(label);
+	double C=1.0/(2.0*((double) NL)*((double) NL));
 
 	double Sxx=0.0,
 		  Sxy=0.0,
@@ -184,9 +211,16 @@ std::vector<double> HK::principle_moments(int label)
 	double lambda1=0.5*Trace+sqrt(0.25*Trace*Trace - Det);
 	double lambda2=0.5*Trace-sqrt(0.25*Trace*Trace - Det);
 
-	moments.push_back(lambda1);
-	moments.push_back(lambda2);
+	if (lambda1<=lambda2)
+	{
+		moments.push_back(lambda1);
+		moments.push_back(lambda2);
+	}
+	else if(lambda1>lambda2)
+	{
+		moments.push_back(lambda2);
+		moments.push_back(lambda1);
+	}
 
 	return moments;
 }
-

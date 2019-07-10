@@ -43,6 +43,9 @@ void print_bonds(lattice &system, string file_name)
 		{
 			if (system.occ(i,j)==1)
 			{
+				x=(i+1)*d;
+				y=(j+1)*d;
+
 				double Beni=0.0;
 				double Benj=0.0;
 				if (i!=N-1) {Beni=system.Bond_Energy(i,j,i+1,j);}
@@ -479,7 +482,8 @@ void run_config()
 		int size = clump.cluster_size(n);
 		if (size == 0) {continue;}
 		inf<<"Cluster "<<n<<":"<<endl;
-		inf<<"	"<<size<<" spin sites"<<endl;
+		inf<<"	Energy: "<<clump.cluster_energy(n)<<endl;
+		inf<<"	spin sites: "<<size<<endl;
 		vector<double> pm = clump.principle_moments(n);
 		inf<<"	principle moment 1: "<<pm[0]<<endl;
 		inf<<"	principle moment 2: "<<pm[1]<<endl;

@@ -61,6 +61,16 @@ void lattice::rand_square_init(int Number)
 			spins[i+i_init][j+j_init].angle=theta;
 		}
 	}
+
+	for (int i=0; i<5; i++)
+	{
+		for (int j=0; j<10; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[50+i][60+j].occ=1;
+			spins[50+i][60+j].angle=theta;
+		}
+	}
 }
 
 void lattice::set_const(double j, double k, double frustration)
@@ -222,4 +232,25 @@ double lattice::Bond_Energy(int i, int j, int n, int m)
 	}
 
 	return B;
+}
+
+double lattice::H_Neighbor(int i, int j)
+{
+	double H=0.0;
+
+	if (i!=N-1)
+	{
+		int weight=spins[i][j].occ*spins[i+1][j].occ;
+		H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight;
+		H+=K*weight;
+	}
+
+	if (j!=N-1)
+	{
+		int weight=spins[i][j].occ*spins[i][j+1].occ;
+		H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight;
+		H+=K*weight;
+	}
+
+	return H;
 }
