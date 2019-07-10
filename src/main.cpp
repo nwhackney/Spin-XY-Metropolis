@@ -231,8 +231,8 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int pbc=0)
 
 			if (system.occ(i,j)==0) {continue;}
 
-			int flag = rand() % 3;
-			//int flag = 0;
+			//int flag = rand() % 3;
+			int flag = 0;
 			if (flag==0) // rotation
 			{
 				double width = 0.2*exp(-0.5*T);
@@ -428,8 +428,8 @@ void run_config()
 
 	lattice crystal;
 	crystal.set_const(J,K,f);
-	crystal.init(N,occ);
-	//crystal.rand_square_init(N);
+	//crystal.init(N,occ);
+	crystal.rand_square_init(N);
 
 	//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	//print_sys(crystal,"init");
@@ -448,12 +448,12 @@ void run_config()
 	
 	double slope,
 	       Temp;
-	for (int t=0; t<Time; t++)
-	{
-		slope=10.0/((double) Time);
-		Temp=1.0/cosh(w*slope*((double) t));
-		Metropolis(crystal,Temp,Edat,pbc);
-	}
+	// for (int t=0; t<Time; t++)
+	// {
+	// 	slope=10.0/((double) Time);
+	// 	Temp=1.0/cosh(w*slope*((double) t));
+	// 	Metropolis(crystal,Temp,Edat,pbc);
+	// }
 
 	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 

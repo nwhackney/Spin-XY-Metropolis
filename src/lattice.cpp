@@ -39,9 +39,6 @@ void lattice::rand_square_init(int Number)
 {
 	N=Number;
 
-	int i_init=1;
-	int j_init=1;
-
 	site Null;
 	Null.occ=0;
 	Null.angle=0.0;
@@ -57,20 +54,167 @@ void lattice::rand_square_init(int Number)
 		for (int j=0; j<20; j++)
 		{
 			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
-			spins[i+i_init][j+j_init].occ=1;
-			spins[i+i_init][j+j_init].angle=theta;
+			spins[i+1][j+1].occ=1;
+			spins[i+1][j+1].angle=theta;
 		}
 	}
 
-	for (int i=0; i<5; i++)
+	for (int i=0; i<20; i++)
 	{
-		for (int j=0; j<10; j++)
+		for (int j=0; j<20; j++)
 		{
 			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
-			spins[50+i][60+j].occ=1;
-			spins[50+i][60+j].angle=theta;
+			spins[i+22][j+1].occ=1;
+			spins[i+22][j+1].angle=theta;
 		}
 	}
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+43][j+1].occ=1;
+			spins[i+43][j+1].angle=theta;
+		}
+	}
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+64][j+1].occ=1;
+			spins[i+64][j+1].angle=theta;
+		}
+	}
+
+///////////
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+1][j+22].occ=1;
+			spins[i+1][j+22].angle=theta;
+		}
+	}
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+22][j+22].occ=1;
+			spins[i+22][j+22].angle=theta;
+		}
+	}
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+43][j+22].occ=1;
+			spins[i+43][j+22].angle=theta;
+		}
+	}
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+64][j+22].occ=1;
+			spins[i+64][j+22].angle=theta;
+		}
+	}	
+
+	////////////
+
+		for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+1][j+43].occ=1;
+			spins[i+1][j+43].angle=theta;
+		}
+	}
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+22][j+43].occ=1;
+			spins[i+22][j+43].angle=theta;
+		}
+	}
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+43][j+43].occ=1;
+			spins[i+43][j+43].angle=theta;
+		}
+	}
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+64][j+43].occ=1;
+			spins[i+64][j+43].angle=theta;
+		}
+	}
+
+	//////////
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+1][j+64].occ=1;
+			spins[i+1][j+64].angle=theta;
+		}
+	}
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+22][j+64].occ=1;
+			spins[i+22][j+64].angle=theta;
+		}
+	}
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+43][j+64].occ=1;
+			spins[i+43][j+64].angle=theta;
+		}
+	}
+
+	for (int i=0; i<20; i++)
+	{
+		for (int j=0; j<20; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+64][j+64].occ=1;
+			spins[i+64][j+64].angle=theta;
+		}
+	}
+
 }
 
 void lattice::set_const(double j, double k, double frustration)
