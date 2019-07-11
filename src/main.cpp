@@ -215,7 +215,7 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int pbc=0)
 	double (lattice::*local_Hamiltonian)(int, int);
 
 	if (pbc==0) {Hamiltonian = &lattice::H; local_Hamiltonian = &lattice::H_local; }
-	else if (pbc==1){Hamiltonian = &lattice::H_periodic;}
+	else if (pbc==1){Hamiltonian = &lattice::H_periodic; local_Hamiltonian = &lattice::H_local_periodic;}
 
 	double E = (system.*Hamiltonian)();
 	Efile<<E<<endl;

@@ -26,12 +26,13 @@ int unionize(int x, int y, std::vector<int> &labels)
 HK::HK(lattice init)
 {
 	system=init;
-	N=system.how_many();	
+	N=system.how_many();
+	N_Spins=system.spin_num();	
 }
 
 void HK::Find_Cluster()
 {
-	for (int i=0; i<N; i++)
+	for (int i=0; i<N_Spins; i++)
 	{
 		labels.push_back(i);
 	}
@@ -64,7 +65,7 @@ void HK::Find_Cluster()
 				{
 		  			case 0:
 		  				labels[0] ++;
-						assert(labels[0] < N);
+						assert(labels[0] < N_Spins);
 						labels[labels[0]] = labels[0];
 		  				matrix[i][j] = labels[0];      // a new cluster
 		  				break;

@@ -3,6 +3,7 @@
 class HK
 {
 	int N;
+	int N_Spins;
 	lattice system;
 	std::vector<int> labels;
 	std::vector<std::vector<int> > matrix;
