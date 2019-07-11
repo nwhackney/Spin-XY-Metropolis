@@ -24,11 +24,13 @@ class lattice
 
 		int occ(int i, int j);
 		int how_many();
+		int spin_num();
 
 		double angle(int i, int j);
 		double H();
 		double H_local(int i, int j);
 		double H_periodic();
+		double H_local_periodic(int i, int j);
 		double Bond_Energy(int i, int j, int n, int m);
 		double H_Neighbor(int i, int j);
 
