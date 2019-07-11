@@ -12,6 +12,7 @@ public:
 	HK(lattice init);
 	void Find_Cluster();
 	void print_cluster();
+	void clusters_labelled();
 
 	int cluster_count();
 	int cluster_size(int label);

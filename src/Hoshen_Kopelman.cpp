@@ -123,6 +123,38 @@ void HK::print_cluster()
 	file.close();
 }
 
+void HK::clusters_labelled()
+{
+	ofstream file;
+	file.open("labelled.p");
+
+	file<<"set terminal png"<<endl;
+	file<<"set output 'labelled.png'"<<endl;
+	file<<"set key off"<<endl;
+	file<<"set xrange [0:255]"<<endl;
+	file<<"set yrange [0:255]"<<endl;
+	file<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<endl;
+
+	for (int i=0; i<system.how_many(); i++)
+	{
+		for (int j=0; j<system.how_many(); j++)
+		{
+			if (matrix[i][j]==0) {continue;}
+			
+			double x=(i+1)*3;
+			double y=(j+1)*3;
+
+			double theta=system.angle(i,j);
+			double dx=cos(theta);
+			double dy=sin(theta);
+
+			file<<"set label '"<<matrix[i][j]<<"' at "<<x<<","<<y<<endl;
+		}
+	}
+	file<<"plot NaN"<<endl;
+	file.close();
+}
+
 int HK::cluster_count()
 {
 	int max_label=0;
