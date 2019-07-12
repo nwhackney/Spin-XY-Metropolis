@@ -71,7 +71,7 @@ void HK::Find_Cluster()
 		  				break;
 		  
 					case 1:                              // part of an existing cluster
-						matrix[i][j] = max(up,left);       // whichever is nonzero is labelled
+						matrix[i][j] = max(up,left);    // whichever is nonzero is labelled
 						break;
 		  
 					case 2:                              // this site binds two clusters
@@ -156,16 +156,6 @@ void HK::clusters_labelled()
 	file.close();
 }
 
-int HK::cluster_count()
-{
-	int max_label=0;
-	for (int i=0; i<N; i++)
-	{
-		if (labels[i]>max_label) {max_label++;}
-	}
-	return max_label;
-}
-
 int HK::cluster_size(int label)
 {
 	int count=0;
@@ -177,6 +167,16 @@ int HK::cluster_size(int label)
 		}
 	}
 	return count;
+}
+
+int HK::cluster_count()
+{
+	int max_label=0;
+	for (int i=1; i<N_Spins; i++)
+	{
+		if (cluster_size(i)!=0) {max_label++;}
+	}
+	return max_label;
 }
 
 double HK::cluster_energy(int label)
@@ -226,17 +226,12 @@ std::vector<double> HK::principle_moments(int label)
 	{
 		for (int m=0; m<coord.size(); m++)
 		{
-			Sxx+=(coord[n].x-coord[m].x)*(coord[n].x-coord[m].x);
-			Sxy+=(coord[n].x-coord[m].x)*(coord[n].y-coord[m].y);
-			Syx+=(coord[n].y-coord[m].y)*(coord[n].x-coord[m].x);
-			Syy+=(coord[n].y-coord[m].y)*(coord[n].y-coord[m].y);
+			Sxx+=C*(coord[n].x-coord[m].x)*(coord[n].x-coord[m].x);
+			Sxy+=C*(coord[n].x-coord[m].x)*(coord[n].y-coord[m].y);
+			Syx+=C*(coord[n].y-coord[m].y)*(coord[n].x-coord[m].x);
+			Syy+=C*(coord[n].y-coord[m].y)*(coord[n].y-coord[m].y);
 		}
 	}
-
-	Sxx=C*Sxx;
-	Sxy=C*Sxy;
-	Syx=C*Syx;
-	Syy=C*Syy;
 
 	double Trace = Sxx + Syy;
 	double Det = Sxx*Syy-Sxy*Syx;

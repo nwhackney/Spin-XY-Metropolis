@@ -10,23 +10,65 @@
 #include "../include/tinytoml-master/include/toml/toml.h"
 #include "Hoshen_Kopelman.cpp"
 
+
 using namespace std;
 
 void print_bonds(lattice &system, string file_name)
 {
+
+	ofstream bh;
+	bh.open("bond_histogram.dat");
+
+	int N = system.how_many();
+
+	double df=0.01;
+	int N_Bins=(int) (1.0/df);
+	vector<int> Bins(N_Bins+1,0);
+
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+			vector<double> GE(2,0.0);
+			GE=system.Bond_Gauge(i,j);
+
+			for (int s=0; s<N_Bins; s++)
+			{
+				if (GE[1]>((double) s)*df and GE[1]< ((double) (s+1))*df) {Bins[s]++;}
+				if (GE[1]>((double) s)*df and GE[1]< ((double) (s+1))*df) {Bins[s]++;}
+			}
+		}
+	}
+	
+	for (int m=0; m<N_Bins; m++)	
+	{
+		bh<<m*df<<" "<<Bins[m]<<endl;
+	}
+
+	double min=0.0;
+	for (int m=0; m<N_Bins; m++)	
+	{
+		if (Bins[m] != 0) {min=df*((double) m); break;}
+	}
+	
+	
+	bh.close();
+
+	///////////////////
+
 	stringstream file;
-	file<<file_name<<".p";
+     file<<file_name<<".p";
 
-	ofstream out;
-	out.open(file.str());
+     ofstream out;
+     out.open(file.str());
 
-	out<<"set terminal png"<<endl;
-	out<<"set output '"<<file_name<<"'"<<endl;
-	out<<"set key off"<<endl;
-	out<<"set xrange [0:203]"<<endl;
-	out<<"set yrange [0:203]"<<endl;
-	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2 lc 'black'"<<endl;
-	out<<"set style arrow 2 nohead "<<endl;
+     out<<"set terminal png"<<endl;
+     out<<"set output '"<<file_name<<"'"<<endl;
+     out<<"set key off"<<endl;
+     out<<"set xrange [0:203]"<<endl;
+     out<<"set yrange [0:203]"<<endl;
+     out<<"set style arrow 1 head filled size screen 0.03,15 ls 2 lc 'black'"<<endl;
+     out<<"set style arrow 2 nohead "<<endl;
 
 	double d=2.5;
 	double theta,
@@ -35,7 +77,6 @@ void print_bonds(lattice &system, string file_name)
 	       dx,
 	       dy;
 
-	int N=system.how_many();
 	int plaq=1;
 	for (int i=0; i<N; i++)
 	{
@@ -48,15 +89,18 @@ void print_bonds(lattice &system, string file_name)
 
 				double Beni=0.0;
 				double Benj=0.0;
-				if (i!=N-1) {Beni=system.Bond_Energy(i,j,i+1,j);}
-				if (j!=N-1) {Benj=system.Bond_Energy(i,j,i,j+1);}
+				
+				vector<double> bonds(2,0.0);
+				bonds=system.Bond_Gauge(i,j);
+
+				Beni=bonds[0]; Benj=bonds[1];
 
 				if (Beni!=0.0)
 				{
-					double w=-2.0*Beni;
-					double R=255.0-205.0*w;
+					double w=(Beni-min)/(1.0-min);
+					double R=255.0-255.0*w;
 					double G=0.0;
-					double B=50.0+205.0*w;
+					double B=255.0*w;
 
 					stringstream Red;
 					stringstream Green;
@@ -70,7 +114,7 @@ void print_bonds(lattice &system, string file_name)
 				}
 				if (Benj!=0)
 				{
-					double w=-2.0*Benj;
+					double w=(Benj-0.8)/(0.2);
 					double R=255.0-205.0*w*w*w;
 					double G=0.0;
 					double B=50.0+205.0*w*w*w;
@@ -301,7 +345,7 @@ void Metropolis_no_sweep(lattice &system, double T, ofstream &Efile, int pbc=0)
 	double (lattice::*Hamiltonian)();
 	double (lattice::*local_Hamiltonian)(int, int);
 
-	if (pbc==0) {Hamiltonian = &lattice::H; local_Hamiltonian = &lattice::H_local; }
+	if (pbc==0) {Hamiltonian = &lattice::H; local_Hamiltonian = &lattice::H_local;}
 	else if (pbc==1){Hamiltonian = &lattice::H_periodic;}
 
 	double E = (system.*Hamiltonian)();
@@ -429,6 +473,7 @@ void run_config()
 	lattice crystal;
 	crystal.set_const(J,K,f);
 	crystal.init(N,occ);
+	//crystal.circle(N,occ,12.0);
 	//crystal.rand_square_init(N);
 
 	//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
@@ -450,7 +495,7 @@ void run_config()
 	       Temp;
 	for (int t=0; t<Time; t++)
 	{
-		slope=10.0/(130000.0);
+		slope=10.0/((double) (Time-100000));
 		Temp=1.0/cosh(w*slope*((double) t));
 		Metropolis(crystal,Temp,Edat,pbc);
 	}
@@ -485,15 +530,15 @@ void run_config()
 		inf<<"	Energy: "<<clump.cluster_energy(n)<<endl;
 		inf<<"	spin sites: "<<size<<endl;
 		vector<double> pm = clump.principle_moments(n);
-		inf<<"	principle moment 1: "<<pm[0]<<endl;
-		inf<<"	principle moment 2: "<<pm[1]<<endl;
+		inf<<"	principle moment 1: "<<2.0*sqrt(pm[0])<<endl;
+		inf<<"	principle moment 2: "<<2.0*sqrt(pm[1])<<endl;
 		inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl<<endl;
 	}
 	inf.close();
 
 	Edat.close();
 
-	print_bonds(crystal,"bonds.png");
+	//print_bonds(crystal,"bonds");
 	print_sys(crystal,out.str());
 	print_sys_data(crystal,out.str());
 	clump.clusters_labelled();

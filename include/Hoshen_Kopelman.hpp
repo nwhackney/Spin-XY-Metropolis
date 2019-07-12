@@ -15,8 +15,8 @@ public:
 	void print_cluster();
 	void clusters_labelled();
 
-	int cluster_count();
 	int cluster_size(int label);
+	int cluster_count();
 
 	double cluster_energy(int label);
 

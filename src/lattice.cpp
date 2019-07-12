@@ -35,9 +35,10 @@ void lattice::init(int Number, int occupancy)
 	}
 }
 
-void lattice::rand_square_init(int Number)
+void lattice::rand_square_init(int Number, int occupancy=1600)
 {
 	N=Number;
+	N_occ=occupancy;
 
 	site Null;
 	Null.occ=0;
@@ -217,6 +218,35 @@ void lattice::rand_square_init(int Number)
 
 }
 
+void lattice::circle(int Number, int occupancy, double R)
+{
+
+	N=Number;
+	N_occ=occupancy;
+
+	site Null;
+	Null.occ=0;
+	Null.angle=0.0;
+
+	spins.resize(Number);
+	for( auto &it : spins )
+	{
+		it.resize(Number, Null);
+	}
+
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+			if ((i-N/2.0)*(i-N/2.0)+(j-N/2.0)*(j-N/2.0) <= R*R)
+			{
+				spins[i][j].angle=3.14;
+				spins[i][j].occ=1;
+			}
+		}
+	}
+}
+
 void lattice::set_const(double j, double k, double frustration)
 {
 	J=j;
@@ -317,18 +347,6 @@ double lattice::H_local_periodic(int i, int j)
 {
 	double H=0.0;
 
-	if (i!=0)
-	{
-		int weight=spins[i][j].occ*spins[i-1][j].occ;
-		H+=J*cos(spins[i][j].angle-spins[i-1][j].angle-f*j)*weight;
-		H+=K*weight;
-	}
-	else
-	{
-		int weight=spins[i][j].occ*spins[N-1][j].occ;
-		H+=J*cos(spins[i][j].angle-spins[N-1][j].angle-f*j)*weight;
-		H+=K*weight;
-	}
 	if (i!=N-1)
 	{
 		int weight=spins[i][j].occ*spins[i+1][j].occ;
@@ -339,18 +357,6 @@ double lattice::H_local_periodic(int i, int j)
 	{
 		int weight=spins[i][j].occ*spins[0][j].occ;
 		H+=J*cos(spins[i][j].angle-spins[0][j].angle+f*j)*weight;
-		H+=K*weight;
-	}
-	if (j!=0)
-	{
-		int weight=spins[i][j].occ*spins[i][j-1].occ;
-		H+=J*cos(spins[i][j].angle-spins[i][j-1].angle+f*i)*weight;
-		H+=K*weight;
-	}
-	else
-	{
-		int weight=spins[i][j].occ*spins[i][N-1].occ;
-		H+=J*cos(spins[i][j].angle-spins[i][N-1].angle+f*i)*weight;
 		H+=K*weight;
 	}
 	if (j!=N-1)
@@ -458,4 +464,25 @@ double lattice::H_Neighbor(int i, int j)
 	}
 
 	return H;
+}
+
+std::vector<double> lattice::Bond_Gauge(int i, int j)
+{
+
+	double BER, BED;
+	std::vector<double> bonds;
+
+	if (i!=N-1)
+	{
+		int weight=spins[i][j].occ*spins[i+1][j].occ;
+		BER=cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight;
+	}
+	if (j!=N-1)
+	{
+		int weight=spins[i][j].occ*spins[i][j+1].occ;
+		BED=cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight;
+	}
+
+	bonds.push_back(BER); bonds.push_back(BED);
+	return bonds;
 }

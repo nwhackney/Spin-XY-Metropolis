@@ -19,6 +19,7 @@ class lattice
 		void set_const(double j, double k, double frustration);
 		void init(int Number, int occupancy);
 		void rand_square_init(int N);
+		void circle(int N, int occ, double R);
 		void flip(int i, int j);
 		void rotate(int i, int j, double theta);
 
@@ -33,5 +34,6 @@ class lattice
 		double H_local_periodic(int i, int j);
 		double Bond_Energy(int i, int j, int n, int m);
 		double H_Neighbor(int i, int j);
+		std::vector<double> Bond_Gauge(int i, int j);
 
 };
