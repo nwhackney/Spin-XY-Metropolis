@@ -35,7 +35,7 @@ void lattice::init(int Number, int occupancy)
 	}
 }
 
-void lattice::rand_square_init(int Number, int occupancy=1600)
+void lattice::rand_square_init(int Number, int occupancy)
 {
 	N=Number;
 	N_occ=occupancy;
@@ -60,9 +60,9 @@ void lattice::rand_square_init(int Number, int occupancy=1600)
 		}
 	}
 
-	for (int i=0; i<20; i++)
+	for (int i=0; i<13; i++)
 	{
-		for (int j=0; j<20; j++)
+		for (int j=0; j<13; j++)
 		{
 			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
 			spins[i+22][j+1].occ=1;
@@ -70,9 +70,9 @@ void lattice::rand_square_init(int Number, int occupancy=1600)
 		}
 	}
 
-	for (int i=0; i<20; i++)
+	for (int i=0; i<15; i++)
 	{
-		for (int j=0; j<20; j++)
+		for (int j=0; j<15; j++)
 		{
 			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
 			spins[i+43][j+1].occ=1;
@@ -80,9 +80,9 @@ void lattice::rand_square_init(int Number, int occupancy=1600)
 		}
 	}
 
-	for (int i=0; i<20; i++)
+	for (int i=0; i<2; i++)
 	{
-		for (int j=0; j<20; j++)
+		for (int j=0; j<2; j++)
 		{
 			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
 			spins[i+64][j+1].occ=1;
@@ -90,11 +90,9 @@ void lattice::rand_square_init(int Number, int occupancy=1600)
 		}
 	}
 
-///////////
-
-	for (int i=0; i<20; i++)
+	for (int i=0; i<4; i++)
 	{
-		for (int j=0; j<20; j++)
+		for (int j=0; j<4; j++)
 		{
 			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
 			spins[i+1][j+22].occ=1;
@@ -102,9 +100,9 @@ void lattice::rand_square_init(int Number, int occupancy=1600)
 		}
 	}
 
-	for (int i=0; i<20; i++)
+	for (int i=0; i<18; i++)
 	{
-		for (int j=0; j<20; j++)
+		for (int j=0; j<18; j++)
 		{
 			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
 			spins[i+22][j+22].occ=1;
@@ -132,9 +130,7 @@ void lattice::rand_square_init(int Number, int occupancy=1600)
 		}
 	}	
 
-	////////////
-
-		for (int i=0; i<20; i++)
+	for (int i=0; i<20; i++)
 	{
 		for (int j=0; j<20; j++)
 		{
@@ -173,8 +169,6 @@ void lattice::rand_square_init(int Number, int occupancy=1600)
 			spins[i+64][j+43].angle=theta;
 		}
 	}
-
-	//////////
 
 	for (int i=0; i<20; i++)
 	{
@@ -234,11 +228,13 @@ void lattice::circle(int Number, int occupancy, double R)
 		it.resize(Number, Null);
 	}
 
+	double Nd=(double) N;
+
 	for (int i=0; i<N; i++)
 	{
 		for (int j=0; j<N; j++)
 		{
-			if ((i-N/2.0)*(i-N/2.0)+(j-N/2.0)*(j-N/2.0) <= R*R)
+			if (((double) i-Nd/2.0)*((double) i-Nd/2.0)+((double) j-Nd/2.0)*((double) j-Nd/2.0) <= R*R)
 			{
 				spins[i][j].angle=3.14;
 				spins[i][j].occ=1;

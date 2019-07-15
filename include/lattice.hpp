@@ -18,7 +18,7 @@ class lattice
 
 		void set_const(double j, double k, double frustration);
 		void init(int Number, int occupancy);
-		void rand_square_init(int N);
+		void rand_square_init(int N, int occupancy);
 		void circle(int N, int occ, double R);
 		void flip(int i, int j);
 		void rotate(int i, int j, double theta);

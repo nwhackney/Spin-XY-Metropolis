@@ -473,8 +473,8 @@ void run_config()
 	lattice crystal;
 	crystal.set_const(J,K,f);
 	crystal.init(N,occ);
-	//crystal.circle(N,occ,12.0);
-	//crystal.rand_square_init(N);
+	//crystal.circle(N,8000,8.0);
+	//crystal.rand_square_init(N, 1600);
 
 	//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	//print_sys(crystal,"init");
@@ -495,7 +495,7 @@ void run_config()
 	       Temp;
 	for (int t=0; t<Time; t++)
 	{
-		slope=10.0/((double) (Time-100000));
+		slope=10.0/((double) (Time));
 		Temp=1.0/cosh(w*slope*((double) t));
 		Metropolis(crystal,Temp,Edat,pbc);
 	}
@@ -522,7 +522,7 @@ void run_config()
 	inf<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	inf<<"Time: "<<duration<<endl;
 	inf<<"Number of Clusters: "<<NC<<endl<<endl;
-	for (int n=1; n<=NC;n++)
+	for (int n=1; n<=clump.max_label();n++)
 	{
 		int size = clump.cluster_size(n);
 		if (size == 0) {continue;}
@@ -532,7 +532,10 @@ void run_config()
 		vector<double> pm = clump.principle_moments(n);
 		inf<<"	principle moment 1: "<<2.0*sqrt(pm[0])<<endl;
 		inf<<"	principle moment 2: "<<2.0*sqrt(pm[1])<<endl;
-		inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl<<endl;
+		inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl;
+		inf<<"	anisotropy: "<< (3.0/2.0)*((pm[0]*pm[0]+pm[1]*pm[1])/((pm[0]+pm[1])*(pm[0]+pm[1]))) - (1.0/2.0)<<endl;
+		vector<double> md = clump.mean_distance_to_surface(n);
+		inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl<<endl;
 	}
 	inf.close();
 

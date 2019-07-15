@@ -179,6 +179,104 @@ int HK::cluster_count()
 	return max_label;
 }
 
+int HK::max_label()
+{
+	int max_label=0;
+	for (int i=1; i<N_Spins; i++)
+	{
+		if (labels[i]>max_label) {max_label=labels[i];}
+	}
+
+	return max_label;
+}
+
+std::vector<double> HK::mean_distance_to_surface(int label)
+{
+	std::vector<int> distance;
+	std::vector<xy> coord;
+	std::vector<double> distr(2,0.0);
+
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+			if (matrix[i][j]==label)
+			{
+				xy temp;
+				temp.x=(double) i; temp.y=(double) j;
+				coord.push_back(temp);
+			}
+		}
+	}
+
+	double NC= (double) coord.size();
+
+	for (int n=0; n<coord.size(); n++)
+	{
+		int i=coord[n].x; int j = coord[n].y;
+		int nc=0.0;
+
+		if (i== N-1 or i==0.0)
+		{
+			distance.push_back(0);
+			continue;
+		}
+		else {nc += system.occ(i+1,j)+system.occ(i-1,j);}
+
+		if (j==N-1 or j==0)
+		{
+			distance.push_back(0);
+			continue;
+		}
+		else {nc += system.occ(i,j+1)+system.occ(i,j-1);}
+
+		if (nc != 4) {distance.push_back(0); continue;}
+
+		int D=2*N;
+		for (int m=0; m<coord.size(); m++)
+		{
+
+			int s=coord[m].x; int t=coord[m].y;
+
+			int nc2=0.0;
+			if (s==N-1 or s==0) {nc2=4;}
+			else {nc2 += system.occ(s+1,t)+system.occ(s-1,t);}
+
+			if (t==N-1 or t==0) {nc2=4;}
+			else {nc2 += system.occ(s,t+1)+system.occ(s,t-1);}
+
+			int temp=abs(i-s)+abs(j-t);
+			if (temp<D and nc2!=4)
+			{
+				D=temp;
+			}
+
+		}
+		
+		if (D==N) {std::cout<<"DA FUCK?"<<std::endl;}
+		distance.push_back(D);
+	}
+
+	int sum=0;
+	for (int u=0; u<distance.size(); u++)
+	{
+		sum+=distance[u];
+	}
+	
+	double mean = (double) sum / NC;
+
+	double sstd;
+	for (int e=0; e<distance.size(); e++)
+	{
+		sstd+=(((double) distance[e])-mean)*(((double) distance[e])-mean);
+	}
+	
+	double std=sqrt(sstd/(NC-1.0));
+	distr[0]=mean; distr[1]=std;
+	
+	return distr;
+}
+
 double HK::cluster_energy(int label)
 {
 	double Energy;
