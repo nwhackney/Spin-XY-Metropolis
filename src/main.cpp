@@ -505,10 +505,10 @@ void run_config()
 	cout<<"Time: "<<duration<<endl;
 	cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 
-	HK clump(crystal);
-	clump.Find_Cluster();
-	clump.print_cluster();
-	int NC=clump.cluster_count();
+	// HK clump(crystal);
+	// clump.Find_Cluster();
+	// clump.print_cluster();
+	// int NC=clump.cluster_count();
 
 	stringstream info;
 	info<<"info_"<<out_file<<".dat";
@@ -521,22 +521,22 @@ void run_config()
 	inf<<"J="<<J<<" K="<<K<<" f="<<f<<endl;
 	inf<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	inf<<"Time: "<<duration<<endl;
-	inf<<"Number of Clusters: "<<NC<<endl<<endl;
-	for (int n=1; n<=clump.max_label();n++)
-	{
-		int size = clump.cluster_size(n);
-		if (size == 0) {continue;}
-		inf<<"Cluster "<<n<<":"<<endl;
-		inf<<"	Energy: "<<clump.cluster_energy(n)<<endl;
-		inf<<"	spin sites: "<<size<<endl;
-		vector<double> pm = clump.principle_moments(n);
-		inf<<"	principle moment 1: "<<2.0*sqrt(pm[0])<<endl;
-		inf<<"	principle moment 2: "<<2.0*sqrt(pm[1])<<endl;
-		inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl;
-		inf<<"	anisotropy: "<< (3.0/2.0)*((pm[0]*pm[0]+pm[1]*pm[1])/((pm[0]+pm[1])*(pm[0]+pm[1]))) - (1.0/2.0)<<endl;
-		vector<double> md = clump.mean_distance_to_surface(n);
-		inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl<<endl;
-	}
+	// inf<<"Number of Clusters: "<<NC<<endl<<endl;
+	// for (int n=1; n<=clump.max_label();n++)
+	// {
+	// 	int size = clump.cluster_size(n);
+	// 	if (size == 0) {continue;}
+	// 	inf<<"Cluster "<<n<<":"<<endl;
+	// 	inf<<"	Energy: "<<clump.cluster_energy(n)<<endl;
+	// 	inf<<"	spin sites: "<<size<<endl;
+	// 	vector<double> pm = clump.principle_moments(n);
+	// 	inf<<"	principle moment 1: "<<2.0*sqrt(pm[0])<<endl;
+	// 	inf<<"	principle moment 2: "<<2.0*sqrt(pm[1])<<endl;
+	// 	inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl;
+	// 	inf<<"	anisotropy: "<< (3.0/2.0)*((pm[0]*pm[0]+pm[1]*pm[1])/((pm[0]+pm[1])*(pm[0]+pm[1]))) - (1.0/2.0)<<endl;
+	// 	vector<double> md = clump.mean_distance_to_surface(n);
+	// 	inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl<<endl;
+	// }
 	inf.close();
 
 	Edat.close();
@@ -544,7 +544,7 @@ void run_config()
 	//print_bonds(crystal,"bonds");
 	print_sys(crystal,out.str());
 	print_sys_data(crystal,out.str());
-	clump.clusters_labelled();
+	//clump.clusters_labelled();
 
 }
 
