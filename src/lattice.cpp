@@ -471,12 +471,12 @@ std::vector<double> lattice::Bond_Gauge(int i, int j)
 	if (i!=N-1)
 	{
 		int weight=spins[i][j].occ*spins[i+1][j].occ;
-		BER=cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight;
+		BER=cos(spins[i][j].angle-spins[i+1][j].angle+f*(double) j)*weight;
 	}
 	if (j!=N-1)
 	{
 		int weight=spins[i][j].occ*spins[i][j+1].occ;
-		BED=cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight;
+		BED=cos(spins[i][j].angle-spins[i][j+1].angle-f*(double) i)*weight;
 	}
 
 	bonds.push_back(BER); bonds.push_back(BED);

@@ -15,46 +15,33 @@ using namespace std;
 
 void print_bonds(lattice &system, string file_name)
 {
-
-	ofstream bh;
-	bh.open("bond_histogram.dat");
-
 	int N = system.how_many();
-
-	double df=0.01;
-	int N_Bins=(int) (1.0/df);
-	vector<int> Bins(N_Bins+1,0);
+	vector<double> Bonds(2*N,0.0);
 
 	for (int i=0; i<N; i++)
 	{
 		for (int j=0; j<N; j++)
 		{
-			vector<double> GE(2,0.0);
-			GE=system.Bond_Gauge(i,j);
-
-			for (int s=0; s<N_Bins; s++)
+			if (system.occ(i,j)==1)
 			{
-				if (GE[1]>((double) s)*df and GE[1]< ((double) (s+1))*df) {Bins[s]++;}
-				if (GE[1]>((double) s)*df and GE[1]< ((double) (s+1))*df) {Bins[s]++;}
+				vector<double> GE(2,0.0);
+				GE=system.Bond_Gauge(i,j);
+				Bonds.push_back(GE[0]);
+				Bonds.push_back(GE[1]);
 			}
 		}
 	}
-	
-	for (int m=0; m<N_Bins; m++)	
+
+	double max=0.0;
+	double min=6.0;
+
+	for (int n=0; n<Bonds.size(); n++)
 	{
-		bh<<m*df<<" "<<Bins[m]<<endl;
+		if (abs(Bonds[n])<min and abs(Bonds[n]) != 0.0) {min=abs(Bonds[n]);}
+		if (abs(Bonds[n])>max) {max=abs(Bonds[n]);}
 	}
 
-	double min=0.0;
-	for (int m=0; m<N_Bins; m++)	
-	{
-		if (Bins[m] != 0) {min=df*((double) m); break;}
-	}
-	
-	
-	bh.close();
-
-	///////////////////
+	cout<<max<<" "<<min<<endl;
 
 	stringstream file;
      file<<file_name<<".p";
@@ -63,12 +50,13 @@ void print_bonds(lattice &system, string file_name)
      out.open(file.str());
 
      out<<"set terminal png"<<endl;
-     out<<"set output '"<<file_name<<"'"<<endl;
+     out<<"set output '"<<file_name<<".png'"<<endl;
+     out << "set object 1 rectangle from screen 0,0 to screen 1,1 fillcolor rgb 'black' behind"<<endl;
      out<<"set key off"<<endl;
-     out<<"set xrange [0:203]"<<endl;
-     out<<"set yrange [0:203]"<<endl;
+     out<<"set xrange [0:53]"<<endl;
+     out<<"set yrange [0:53]"<<endl;
      out<<"set style arrow 1 head filled size screen 0.03,15 ls 2 lc 'black'"<<endl;
-     out<<"set style arrow 2 nohead "<<endl;
+     out<<"set style arrow 2 nohead ls 10 "<<endl;
 
 	double d=2.5;
 	double theta,
@@ -97,7 +85,7 @@ void print_bonds(lattice &system, string file_name)
 
 				if (Beni!=0.0)
 				{
-					double w=(Beni-min)/(1.0-min);
+					double w=(Beni-min)/(max-min);
 					double R=255.0-255.0*w;
 					double G=0.0;
 					double B=255.0*w;
@@ -110,14 +98,18 @@ void print_bonds(lattice &system, string file_name)
 					Green<<hex<<(int) G;
 					Blue<<hex<<(int) B;
 
+					if (Red.str().length()==1) { Red.str(std::string()); Red<<"0"<<hex<<(int) R;}
+					if (Green.str().length()==1) { Green.str(std::string()); Green<<"0"<<hex<<(int) G;}
+					if (Blue.str().length()==1) { Blue.str(std::string()); Blue<<"0"<<hex<<(int) B;}
+
 					out<< "set arrow from "<<x<<","<<y<<" to "<<x+d<<","<<y<<" as 2 lc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<endl;
 				}
 				if (Benj!=0)
 				{
-					double w=(Benj-0.8)/(0.2);
-					double R=255.0-205.0*w*w*w;
+					double w=(Benj-min)/(max-min);
+					double R=255.0-255.0*w;
 					double G=0.0;
-					double B=50.0+205.0*w*w*w;
+					double B=255.0*w;
 
 					stringstream Red;
 					stringstream Green;
@@ -126,6 +118,10 @@ void print_bonds(lattice &system, string file_name)
 					Red<<hex<<(int) R;
 					Green<<hex<<(int) G;
 					Blue<<hex<<(int) B;
+
+					if (Red.str().length()==1) { Red.str(std::string()); Red<<"0"<<hex<<(int) R;}
+					if (Green.str().length()==1) { Green.str(std::string()); Green<<"0"<<hex<<(int) G;}
+					if (Blue.str().length()==1) { Blue.str(std::string()); Blue<<"0"<<hex<<(int) B;}
 
 					out<< "set arrow from "<<x<<","<<y<<" to "<<x<<","<<y+d<<" as 2 lc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<endl;
 				}
@@ -150,8 +146,8 @@ void print_sys(lattice &system, string file_name)
 	out<<"set terminal png"<<endl;
 	out<<"set output '"<<png.str()<<"'"<<endl;
 	out<<"set key off"<<endl;
-	out<<"set xrange [0:203]"<<endl;
-	out<<"set yrange [0:203]"<<endl;
+	out<<"set xrange [0:213]"<<endl;
+	out<<"set yrange [0:213]"<<endl;
 	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<endl;
 
 	double d=2.5;
@@ -505,10 +501,10 @@ void run_config()
 	cout<<"Time: "<<duration<<endl;
 	cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 
-	// HK clump(crystal);
-	// clump.Find_Cluster();
-	// clump.print_cluster();
-	// int NC=clump.cluster_count();
+	HK clump(crystal);
+	clump.Find_Cluster();
+	clump.print_cluster();
+	int NC=clump.cluster_count();
 
 	stringstream info;
 	info<<"info_"<<out_file<<".dat";
@@ -521,30 +517,30 @@ void run_config()
 	inf<<"J="<<J<<" K="<<K<<" f="<<f<<endl;
 	inf<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	inf<<"Time: "<<duration<<endl;
-	// inf<<"Number of Clusters: "<<NC<<endl<<endl;
-	// for (int n=1; n<=clump.max_label();n++)
-	// {
-	// 	int size = clump.cluster_size(n);
-	// 	if (size == 0) {continue;}
-	// 	inf<<"Cluster "<<n<<":"<<endl;
-	// 	inf<<"	Energy: "<<clump.cluster_energy(n)<<endl;
-	// 	inf<<"	spin sites: "<<size<<endl;
-	// 	vector<double> pm = clump.principle_moments(n);
-	// 	inf<<"	principle moment 1: "<<2.0*sqrt(pm[0])<<endl;
-	// 	inf<<"	principle moment 2: "<<2.0*sqrt(pm[1])<<endl;
-	// 	inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl;
-	// 	inf<<"	anisotropy: "<< (3.0/2.0)*((pm[0]*pm[0]+pm[1]*pm[1])/((pm[0]+pm[1])*(pm[0]+pm[1]))) - (1.0/2.0)<<endl;
-	// 	vector<double> md = clump.mean_distance_to_surface(n);
-	// 	inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl<<endl;
-	// }
+	inf<<"Number of Clusters: "<<NC<<endl<<endl;
+	for (int n=1; n<=clump.max_label();n++)
+	{
+		int size = clump.cluster_size(n);
+		if (size == 0) {continue;}
+		inf<<"Cluster "<<n<<":"<<endl;
+		inf<<"	Energy: "<<clump.cluster_energy(n)<<endl;
+		inf<<"	spin sites: "<<size<<endl;
+		vector<double> pm = clump.principle_moments(n);
+		inf<<"	principle moment 1: "<<2.0*sqrt(pm[0])<<endl;
+		inf<<"	principle moment 2: "<<2.0*sqrt(pm[1])<<endl;
+		inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl;
+		inf<<"	anisotropy: "<< (3.0/2.0)*((pm[0]*pm[0]+pm[1]*pm[1])/((pm[0]+pm[1])*(pm[0]+pm[1]))) - (1.0/2.0)<<endl;
+		vector<double> md = clump.mean_distance_to_surface(n);
+		inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl<<endl;
+	}
 	inf.close();
 
 	Edat.close();
 
-	//print_bonds(crystal,"bonds");
+	print_bonds(crystal,"bonds");
 	print_sys(crystal,out.str());
 	print_sys_data(crystal,out.str());
-	//clump.clusters_labelled();
+	clump.clusters_labelled();
 
 }
 
