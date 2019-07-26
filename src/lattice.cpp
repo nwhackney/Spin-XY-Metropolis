@@ -212,6 +212,32 @@ void lattice::rand_square_init(int Number, int occupancy)
 
 }
 
+void lattice::square_init(int Number, int length)
+{
+	N=Number;
+	N_occ=length*length;
+
+	site Null;
+	Null.occ=0;
+	Null.angle=0.0;
+
+	spins.resize(Number);
+	for( auto &it : spins )
+	{
+		it.resize(Number, Null);
+	}
+
+	for (int i=1; i<length; i++)
+	{
+		for (int j=1; j<length; j++)
+		{
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+			spins[i+1][j+1].occ=1;
+			spins[i+1][j+1].angle=theta;
+		}
+	}
+}
+
 void lattice::circle(int Number, int occupancy, double R)
 {
 
