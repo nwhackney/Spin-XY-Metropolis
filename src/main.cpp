@@ -269,8 +269,8 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int pbc=0)
 
 			if (system.occ(i,j)==0) {continue;}
 
-			//int flag = rand() % 3;
-			int flag = 0;
+			int flag = rand() % 3;
+			//int flag = 0;
 			if (flag==0) // rotation
 			{
 				double width = 0.2*exp(-0.5*T);
@@ -447,14 +447,14 @@ void run_config()
 	const toml::Value* outp = v.find("output");
 	const toml::Value* BCG = v.find("Bond_Color_Grid");
 	const toml::Value*  W = v.find("Width");
-	const toml::Value* l = v.find("Length");
+	//const toml::Value* l = v.find("Length");
 
 	int N= Np->as<int>();
 	int occ= Occp->as<int>();
 	int Time=Tp->as<int>();
 	int pbc=PBC->as<int>();
 	int bcg=BCG->as<int>();
-	int L=l->as<int>();
+	//int L=l->as<int>();
 	double w=W->as<double>();
 	double J=Jp->as<double>();
 	double K=Kp->as<double>();
@@ -471,7 +471,7 @@ void run_config()
 	//crystal.init(N,occ);
 	//crystal.circle(N,8000,8.0);
 	//crystal.rand_square_init(N, 1600);
-	crystal.square_init(N,L);
+	//crystal.square_init(N,L);
 
 	//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	//print_sys(crystal,"init");
