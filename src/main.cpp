@@ -468,7 +468,7 @@ void run_config()
 
 	lattice crystal;
 	crystal.set_const(J,K,f);
-	//crystal.init(N,occ);
+	crystal.init(N,occ);
 	//crystal.circle(N,8000,8.0);
 	//crystal.rand_square_init(N, 1600);
 	//crystal.square_init(N,L);
