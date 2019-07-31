@@ -1,4 +1,5 @@
 #include "../include/Hoshen_Kopelman.hpp"
+#include "Skeleton.cpp"
 #include <fstream>
 
 using namespace std;
@@ -292,6 +293,31 @@ double HK::cluster_energy(int label)
 		}
 	}
 	return Energy;
+}
+
+double HK::cluster_skeletonize(int label)
+{
+	lattice agg;
+	agg.init(system.how_many(),0);
+	for (int i=0; i<system.how_many(); i++)
+	{
+		for (int j=0; j<system.how_many(); j++)
+		{
+			if (matrix[i][j]==label)
+			{
+				agg.flip(i,j);
+				agg.rotate(i,j,system.angle(i,j));
+			}
+		}
+	}
+
+	stringstream name;
+	name<<"Skeleton_"<<label;
+
+	Skeleton id_clump(agg);
+	id_clump.thin(name.str());
+
+	return id_clump.medial_distance();
 }
 
 std::vector<double> HK::principle_moments(int label)
