@@ -469,9 +469,9 @@ void run_config()
 
 	lattice crystal;
 	crystal.set_const(J,K,f);
-	//crystal.init(N,occ);
+	crystal.init(N,occ);
 	//crystal.circle(N,8000,8.0);
-	crystal.rand_square_init(N, 1600);
+	//crystal.rand_square_init(N, 1600);
 	//crystal.square_init(N,60);
 
 	//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
@@ -491,12 +491,12 @@ void run_config()
 	
 	double slope,
 	       Temp;
-	// for (int t=0; t<Time; t++)
-	// {
-	// 	slope=10.0/((double) (Time));
-	// 	Temp=1.0/cosh(w*slope*((double) t));
-	// 	Metropolis(crystal,Temp,Edat,pbc);
-	// }
+	for (int t=0; t<Time; t++)
+	{
+		slope=10.0/((double) (Time));
+		Temp=1.0/cosh(w*slope*((double) t));
+		Metropolis(crystal,Temp,Edat,pbc);
+	}
 
 	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 
