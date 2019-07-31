@@ -9,6 +9,7 @@
 #include "lattice.cpp"
 #include "../include/tinytoml-master/include/toml/toml.h"
 #include "Hoshen_Kopelman.cpp"
+#include "Skeleton.cpp"
 
 
 using namespace std;
@@ -471,7 +472,7 @@ void run_config()
 	crystal.init(N,occ);
 	//crystal.circle(N,8000,8.0);
 	//crystal.rand_square_init(N, 1600);
-	//crystal.square_init(N,L);
+	//crystal.square_init(N,60);
 
 	//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	//print_sys(crystal,"init");
@@ -501,6 +502,9 @@ void run_config()
 
 	cout<<"Time: "<<duration<<endl;
 	cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
+
+	Skeleton Skull(crystal);
+	Skull.thin();
 
 	HK clump(crystal);
 	clump.Find_Cluster();
