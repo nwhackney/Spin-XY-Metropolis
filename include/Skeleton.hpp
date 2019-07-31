@@ -1,13 +1,13 @@
 class Skeleton
 {
 	int N;
-	int N_Spins;
 	lattice system;
-	std::vector<int> labels;
-	std::vector<std::vector<int> > matrix;
+	std::vector<std::vector<int> > Bin;
+	std::vector<std::vector<int> > Boundary;
 
 public:
 
 	Skeleton(lattice init);
-	void thin();
+	void thin(std::string file);
+	double medial_distance();
 };

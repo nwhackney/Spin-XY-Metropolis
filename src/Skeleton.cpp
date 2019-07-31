@@ -4,12 +4,13 @@ Skeleton::Skeleton(lattice init)
 {
 	system=init;
 	N=system.how_many();
-	N_Spins=system.spin_num();	
+
+	std::vector<std::vector<int> > Bin;
+	std::vector<std::vector<int> > Boundary;
 }
 
-void Skeleton::thin()
+void Skeleton::thin(std::string file)
 {
-	vector<vector<int> > Bin;
     	Bin.resize(N);
 	for( auto &it : Bin )
 	{
@@ -24,14 +25,13 @@ void Skeleton::thin()
      	}
      }
 
-	vector<vector<int> > Boundary;
     	Boundary.resize(N);
 	for( auto &it : Boundary )
 	{
 		it.resize(N, 0);
 	}
 
-		vector<vector<int> > copy;
+		std::vector<std::vector<int> > copy;
 		copy=Bin;
 
 		for (int i=1; i<N-1; i++)
@@ -243,7 +243,7 @@ void Skeleton::thin()
 	do
 	{
 		count = 0;
-		vector<vector<int> > temp;
+		std::vector<std::vector<int> > temp;
 		temp.resize(N);
 		for( auto &it : temp )
 		{
@@ -464,15 +464,20 @@ void Skeleton::thin()
 		}
 	}while (count!=0);
 
-	ofstream Skull;
-	Skull.open("Skeleton.p");
+	std::stringstream name;
+	name<<file<<".p";
 
-	Skull<<"set terminal png"<<endl;
-	Skull<<"set output 'Skeleton.png'"<<endl;
-	Skull<<"set key off"<<endl;
-	Skull<<"set xrange [0:86]"<<endl;
-	Skull<<"set yrange [0:86]"<<endl;
-	Skull<<"set style arrow 2 nohead ls 10 "<<endl;
+	std::ofstream Skull;
+	Skull.open(name.str());
+
+	name<<"ng";
+
+	Skull<<"set terminal png"<<std::endl;
+	Skull<<"set output '"<<name.str()<<"'"<<std::endl;
+	Skull<<"set key off"<<std::endl;
+	Skull<<"set xrange [0:86]"<<std::endl;
+	Skull<<"set yrange [0:86]"<<std::endl;
+	Skull<<"set style arrow 2 nohead ls 10 "<<std::endl;
 
 	for (int i=0; i<N; i++)
 	{
@@ -482,35 +487,35 @@ void Skeleton::thin()
 
 			if (Boundary[i-1][j-1]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j<<" as 2 lc rgb 'violet'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j<<" as 2 lc rgb 'violet'"<<std::endl;
 			}
 			if (Boundary[i-1][j]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j+1<<" as 2 lc rgb 'violet'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j+1<<" as 2 lc rgb 'violet'"<<std::endl;
 			}
 			if (Boundary[i-1][j+1]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j+2<<" as 2 lc rgb 'violet'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j+2<<" as 2 lc rgb 'violet'"<<std::endl;
 			}
 			if (Boundary[i][j-1]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+1<<","<<j<<" as 2 lc rgb 'violet'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+1<<","<<j<<" as 2 lc rgb 'violet'"<<std::endl;
 			}
 			if (Boundary[i][j+1]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+1<<","<<j+2<<" as 2 lc rgb 'violet'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+1<<","<<j+2<<" as 2 lc rgb 'violet'"<<std::endl;
 			}
 			if (Boundary[i+1][j-1]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j<<" as 2 lc rgb 'violet'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j<<" as 2 lc rgb 'violet'"<<std::endl;
 			}
 			if (Boundary[i+1][j]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j+1<<" as 2 lc rgb 'violet'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j+1<<" as 2 lc rgb 'violet'"<<std::endl;
 			}
 			if (Boundary[i+1][j+1]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j+2<<" as 2 lc rgb 'violet'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j+2<<" as 2 lc rgb 'violet'"<<std::endl;
 			}
 		}
 	}
@@ -524,39 +529,73 @@ void Skeleton::thin()
 
 			if (Bin[i-1][j-1]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j<<" as 2 lc rgb 'black'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j<<" as 2 lc rgb 'black'"<<std::endl;
 			}
 			if (Bin[i-1][j]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j+1<<" as 2 lc rgb 'black'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j+1<<" as 2 lc rgb 'black'"<<std::endl;
 			}
 			if (Bin[i-1][j+1]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j+2<<" as 2 lc rgb 'black'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j+2<<" as 2 lc rgb 'black'"<<std::endl;
 			}
 			if (Bin[i][j-1]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+1<<","<<j<<" as 2 lc rgb 'black'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+1<<","<<j<<" as 2 lc rgb 'black'"<<std::endl;
 			}
 			if (Bin[i][j+1]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+1<<","<<j+2<<" as 2 lc rgb 'black'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+1<<","<<j+2<<" as 2 lc rgb 'black'"<<std::endl;
 			}
 			if (Bin[i+1][j-1]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j<<" as 2 lc rgb 'black'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j<<" as 2 lc rgb 'black'"<<std::endl;
 			}
 			if (Bin[i+1][j]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j+1<<" as 2 lc rgb 'black'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j+1<<" as 2 lc rgb 'black'"<<std::endl;
 			}
 			if (Bin[i+1][j+1]==1)
 			{
-				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j+2<<" as 2 lc rgb 'black'"<<endl;
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j+2<<" as 2 lc rgb 'black'"<<std::endl;
 			}
 		}
 	}
 
-	Skull<<"plot NaN"<<endl;
+	Skull<<"plot NaN"<<std::endl;
 	Skull.close();
+}
+
+double Skeleton::medial_distance()
+{
+
+	std::vector<double> distance;
+
+	double min;
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+			if (Bin[i][j]!=1) {continue;}
+			min=double(N);
+			for (int n=0; n<N; n++)
+			{
+				for (int m=0; m<N; m++)
+				{
+					if (Boundary[n][m]==0) {continue;}
+					double D=abs(i-n)+abs(j-m);
+					if (D<min and D!=0) {min=D;}
+				}
+			}
+			distance.push_back(min);
+		}
+	}
+
+	double sum=0.0;
+	for (int u=0; u<distance.size(); u++)
+	{
+		sum+=distance[u];
+	}
+
+	return sum/(double(distance.size()));
 }

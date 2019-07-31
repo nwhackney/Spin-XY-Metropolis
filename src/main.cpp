@@ -9,7 +9,7 @@
 #include "lattice.cpp"
 #include "../include/tinytoml-master/include/toml/toml.h"
 #include "Hoshen_Kopelman.cpp"
-#include "Skeleton.cpp"
+//#include "Skeleton.cpp"
 
 
 using namespace std;
@@ -469,9 +469,9 @@ void run_config()
 
 	lattice crystal;
 	crystal.set_const(J,K,f);
-	crystal.init(N,occ);
+	//crystal.init(N,occ);
 	//crystal.circle(N,8000,8.0);
-	//crystal.rand_square_init(N, 1600);
+	crystal.rand_square_init(N, 1600);
 	//crystal.square_init(N,60);
 
 	//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
@@ -491,20 +491,19 @@ void run_config()
 	
 	double slope,
 	       Temp;
-	for (int t=0; t<Time; t++)
-	{
-		slope=10.0/((double) (Time));
-		Temp=1.0/cosh(w*slope*((double) t));
-		Metropolis(crystal,Temp,Edat,pbc);
-	}
+	// for (int t=0; t<Time; t++)
+	// {
+	// 	slope=10.0/((double) (Time));
+	// 	Temp=1.0/cosh(w*slope*((double) t));
+	// 	Metropolis(crystal,Temp,Edat,pbc);
+	// }
 
 	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 
 	cout<<"Time: "<<duration<<endl;
 	cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
-
 	Skeleton Skull(crystal);
-	Skull.thin();
+	Skull.thin("Skeleton");
 
 	HK clump(crystal);
 	clump.Find_Cluster();
@@ -536,7 +535,9 @@ void run_config()
 		inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl;
 		inf<<"	anisotropy: "<< (3.0/2.0)*((pm[0]*pm[0]+pm[1]*pm[1])/((pm[0]+pm[1])*(pm[0]+pm[1]))) - (1.0/2.0)<<endl;
 		vector<double> md = clump.mean_distance_to_surface(n);
-		inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl<<endl;
+		inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl;
+		double fu=clump.cluster_skeletonize(n);
+		inf<<"	Medial Distance: "<<fu<<endl<<endl;
 	}
 	inf.close();
 
