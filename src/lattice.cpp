@@ -232,8 +232,8 @@ void lattice::square_init(int Number, int length)
 		for (int j=1; j<length; j++)
 		{
 			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
-			spins[i+1][j+1].occ=1;
-			spins[i+1][j+1].angle=theta;
+			spins[i+20][j+20].occ=1;
+			spins[i+20][j+20].angle=theta;
 		}
 	}
 }
@@ -317,16 +317,16 @@ double lattice::H()
 			if (i!=N-1)
 			{
 				int weight=spins[i][j].occ*spins[i+1][j].occ;
-				// H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight; // Original Gauge
-				H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*j)*weight; // New -trial- Gauge
+				 H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight; // Original Gauge
+				//H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*j)*weight; // New -trial- Gauge
 				H+=K*weight;
 			}
 
 			if (j!=N-1)
 			{
 				int weight=spins[i][j].occ*spins[i][j+1].occ;
-				//H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; //Original Gauge
-				H+=J*cos(spins[i][j].angle-spins[i][j+1].angle)*weight; // New -trial- Gauge
+				H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; //Original Gauge
+				//H+=J*cos(spins[i][j].angle-spins[i][j+1].angle)*weight; // New -trial- Gauge
 				H+=K*weight;
 			}
 		}
@@ -342,29 +342,29 @@ double lattice::H_local(int i, int j)
 	if (i!=0)
 	{
 		int weight=spins[i][j].occ*spins[i-1][j].occ;
-		//H+=J*cos(spins[i][j].angle-spins[i-1][j].angle-f*j)*weight; //OG Gauge
-		H+=J*cos(spins[i][j].angle-spins[i-1][j].angle-2.0*f*j)*weight; //New Gauge
+		H+=J*cos(spins[i][j].angle-spins[i-1][j].angle-f*j)*weight; //OG Gauge
+		//H+=J*cos(spins[i][j].angle-spins[i-1][j].angle-2.0*f*j)*weight; //New Gauge
 		H+=K*weight;
 	}
 	if (i!=N-1)
 	{
 		int weight=spins[i][j].occ*spins[i+1][j].occ;
-		//H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight; //OG Gauge
-		H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*j)*weight; //New Gauge
+		H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight; //OG Gauge
+		//H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*j)*weight; //New Gauge
 		H+=K*weight;
 	}
 	if (j!=0)
 	{
 		int weight=spins[i][j].occ*spins[i][j-1].occ;
-		//H+=J*cos(spins[i][j].angle-spins[i][j-1].angle+f*i)*weight; //OG Gauge
-		H+=J*cos(spins[i][j].angle-spins[i][j-1].angle)*weight; //New Gauge
+		H+=J*cos(spins[i][j].angle-spins[i][j-1].angle+f*i)*weight; //OG Gauge
+		//H+=J*cos(spins[i][j].angle-spins[i][j-1].angle)*weight; //New Gauge
 		H+=K*weight;
 	}
 	if (j!=N-1)
 	{
 		int weight=spins[i][j].occ*spins[i][j+1].occ;
-		//H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; //OG Gauge
-		H+=J*cos(spins[i][j].angle-spins[i][j+1].angle)*weight; //New Gauge
+		H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; //OG Gauge
+		//H+=J*cos(spins[i][j].angle-spins[i][j+1].angle)*weight; //New Gauge
 		H+=K*weight;
 	}
 
@@ -378,29 +378,29 @@ double lattice::H_local_periodic(int i, int j)
 	if (i!=N-1)
 	{
 		int weight=spins[i][j].occ*spins[i+1][j].occ;
-		//H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight; //OG Gauge
-		H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*j)*weight; //New Gauge
+		H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight; //OG Gauge
+		//H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*j)*weight; //New Gauge
 		H+=K*weight;
 	}
 	else
 	{
 		int weight=spins[i][j].occ*spins[0][j].occ;
-		//H+=J*cos(spins[i][j].angle-spins[0][j].angle+f*j)*weight; //OG Gauge
-		H+=J*cos(spins[i][j].angle-spins[0][j].angle+2.0*f*j)*weight; //New Gauge
+		H+=J*cos(spins[i][j].angle-spins[0][j].angle+f*j)*weight; //OG Gauge
+		//H+=J*cos(spins[i][j].angle-spins[0][j].angle+2.0*f*j)*weight; //New Gauge
 		H+=K*weight;
 	}
 	if (j!=N-1)
 	{
 		int weight=spins[i][j].occ*spins[i][j+1].occ;
-		//H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; //OG Gauge
-		H+=J*cos(spins[i][j].angle-spins[i][j+1].angle)*weight; //New Gauge
+		H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; //OG Gauge
+		//H+=J*cos(spins[i][j].angle-spins[i][j+1].angle)*weight; //New Gauge
 		H+=K*weight;
 	}
 	else
 	{
 		int weight=spins[i][j].occ*spins[i][0].occ;
-		//H+=J*cos(spins[i][j].angle-spins[i][0].angle-f*i)*weight; //OG Gauge
-		H+=J*cos(spins[i][j].angle-spins[i][0].angle)*weight; //New Gauge
+		H+=J*cos(spins[i][j].angle-spins[i][0].angle-f*i)*weight; //OG Gauge
+		//H+=J*cos(spins[i][j].angle-spins[i][0].angle)*weight; //New Gauge
 		H+=K*weight;
 	}
 
@@ -417,30 +417,30 @@ double lattice::H_periodic()
 			if (i!=N-1)
 			{
 				int weight=spins[i][j].occ*spins[i+1][j].occ;
-				//H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight; //OG Gauge
-				H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*j)*weight; //New Gauge
+				H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight; //OG Gauge
+				//H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*j)*weight; //New Gauge
 				H+=K*weight;
 			}
 			else
 			{
 				int weight=spins[i][j].occ*spins[0][j].occ;
-				//H+=J*cos(spins[i][j].angle-spins[0][j].angle+f*j)*weight; //OG Gauge
-				H+=J*cos(spins[i][j].angle-spins[0][j].angle+2.0*f*j)*weight; //New Gauge
+				H+=J*cos(spins[i][j].angle-spins[0][j].angle+f*j)*weight; //OG Gauge
+				//H+=J*cos(spins[i][j].angle-spins[0][j].angle+2.0*f*j)*weight; //New Gauge
 				H+=K*weight;
 			}
 
 			if (j!=N-1)
 			{
 				int weight=spins[i][j].occ*spins[i][j+1].occ;
-				//H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; //OG Gauge
-				H+=J*cos(spins[i][j].angle-spins[i][j+1].angle)*weight;  //New Gauge
+				H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; //OG Gauge
+				//H+=J*cos(spins[i][j].angle-spins[i][j+1].angle)*weight;  //New Gauge
 				H+=K*weight;
 			}
 			else
 			{
 				int weight=spins[i][j].occ*spins[i][0].occ;
-				//H+=J*cos(spins[i][j].angle-spins[i][0].angle-f*i)*weight; //OG Gauge
-				H+=J*cos(spins[i][j].angle-spins[i][0].angle)*weight; //New Gauge
+				H+=J*cos(spins[i][j].angle-spins[i][0].angle-f*i)*weight; //OG Gauge
+				//H+=J*cos(spins[i][j].angle-spins[i][0].angle)*weight; //New Gauge
 				H+=K*weight;
 			}
 		}
@@ -456,29 +456,29 @@ double lattice::Bond_Energy(int i, int j, int n, int m)
 	if (i==n and j==m+1)
 	{
 		int weight=spins[i][j].occ*spins[n][m].occ;
-		//B+=J*cos(spins[i][j].angle-spins[n][m].angle+f*i)*weight; //OG Gauge
-		B+=J*cos(spins[i][j].angle-spins[n][m].angle)*weight; //New Gauge
+		B+=J*cos(spins[i][j].angle-spins[n][m].angle+f*i)*weight; //OG Gauge
+		//B+=J*cos(spins[i][j].angle-spins[n][m].angle)*weight; //New Gauge
 		B+=K*weight;
 	}
 	else if (i==n and j==m-1)
 	{
 		int weight=spins[i][j].occ*spins[n][m].occ;
-		//B+=J*cos(spins[i][j].angle-spins[n][m].angle-f*i)*weight; //OG Gauge
-		B+=J*cos(spins[i][j].angle-spins[n][m].angle)*weight; //New Gauge
+		B+=J*cos(spins[i][j].angle-spins[n][m].angle-f*i)*weight; //OG Gauge
+		//B+=J*cos(spins[i][j].angle-spins[n][m].angle)*weight; //New Gauge
 		B+=K*weight;
 	}
 	else if (i==n+1 and j==m)
 	{
 		int weight=spins[i][j].occ*spins[n][m].occ;
-		//B+=J*cos(spins[i][j].angle-spins[n][m].angle-f*j)*weight; //OG Gauge
-		B+=J*cos(spins[i][j].angle-spins[n][m].angle-2.0*f*j)*weight; //New Gauge
+		B+=J*cos(spins[i][j].angle-spins[n][m].angle-f*j)*weight; //OG Gauge
+		//B+=J*cos(spins[i][j].angle-spins[n][m].angle-2.0*f*j)*weight; //New Gauge
 		B+=K*weight;
 	}
 	else if (i==n-1 and j==m)
 	{
 		int weight=spins[i][j].occ*spins[n][m].occ;
-		//B+=J*cos(spins[i][j].angle-spins[n][m].angle+f*j)*weight; //OG Gauge
-		B+=J*cos(spins[i][j].angle-spins[n][m].angle+2.0*f*j)*weight; //New Gauge
+		B+=J*cos(spins[i][j].angle-spins[n][m].angle+f*j)*weight; //OG Gauge
+		//B+=J*cos(spins[i][j].angle-spins[n][m].angle+2.0*f*j)*weight; //New Gauge
 		B+=K*weight;
 	}
 
@@ -492,16 +492,16 @@ double lattice::H_Neighbor(int i, int j)
 	if (i!=N-1)
 	{
 		int weight=spins[i][j].occ*spins[i+1][j].occ;
-		//H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight; //OG Gauge
-		H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*j)*weight; //New Gauge
+		H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight; //OG Gauge
+		//H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*j)*weight; //New Gauge
 		H+=K*weight;
 	}
 
 	if (j!=N-1)
 	{
 		int weight=spins[i][j].occ*spins[i][j+1].occ;
-		//H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; //OG Gauge
-		H+=J*cos(spins[i][j].angle-spins[i][j+1].angle)*weight; //New Gauge
+		H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; //OG Gauge
+		//H+=J*cos(spins[i][j].angle-spins[i][j+1].angle)*weight; //New Gauge
 		H+=K*weight;
 	}
 
@@ -517,14 +517,14 @@ std::vector<double> lattice::Bond_Gauge(int i, int j)
 	if (i!=N-1)
 	{
 		int weight=spins[i][j].occ*spins[i+1][j].occ;
-		//BER=cos(spins[i][j].angle-spins[i+1][j].angle+f*(double) j)*weight; //OG Gauge
-		BER=cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*(double) j)*weight; //New Gauge
+		BER=cos(spins[i][j].angle-spins[i+1][j].angle+f*(double) j)*weight; //OG Gauge
+		//BER=cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*(double) j)*weight; //New Gauge
 	}
 	if (j!=N-1)
 	{
 		int weight=spins[i][j].occ*spins[i][j+1].occ;
-		//BED=cos(spins[i][j].angle-spins[i][j+1].angle-f*(double) i)*weight; //OG Gauge
-		BED=cos(spins[i][j].angle-spins[i][j+1].angle)*weight; //New Gauge
+		BED=cos(spins[i][j].angle-spins[i][j+1].angle-f*(double) i)*weight; //OG Gauge
+		//BED=cos(spins[i][j].angle-spins[i][j+1].angle)*weight; //New Gauge
 	}
 
 	bonds.push_back(BER); bonds.push_back(BED);

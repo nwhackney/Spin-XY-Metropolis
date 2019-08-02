@@ -52,8 +52,8 @@ void print_bonds(lattice &system, string file_name)
      out<<"set output '"<<file_name<<".png'"<<endl;
      out << "set object 1 rectangle from screen 0,0 to screen 1,1 fillcolor rgb 'black' behind"<<endl;
      out<<"set key off"<<endl;
-     out<<"set xrange [0:53]"<<endl;
-     out<<"set yrange [0:53]"<<endl;
+     out<<"set xrange [0:213]"<<endl;
+     out<<"set yrange [0:213]"<<endl;
      out<<"set style arrow 1 head filled size screen 0.03,15 ls 2 lc 'black'"<<endl;
      out<<"set style arrow 2 nohead ls 10 "<<endl;
 
@@ -469,10 +469,10 @@ void run_config()
 
 	lattice crystal;
 	crystal.set_const(J,K,f);
-	crystal.init(N,occ);
+	//crystal.init(N,occ);
 	//crystal.circle(N,8000,8.0);
 	//crystal.rand_square_init(N, 1600);
-	//crystal.square_init(N,60);
+	crystal.square_init(N,40);
 
 	//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	//print_sys(crystal,"init");
