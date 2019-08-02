@@ -566,6 +566,165 @@ void Skeleton::thin(std::string file)
 	Skull.close();
 }
 
+void Skeleton::back_bone(std::string file)
+{
+	std::vector<std::vector<int> > dup;
+	dup.resize(N);
+	for( auto &it : dup )
+	{
+		it.resize(N, 0);
+	}
+
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
+		{
+			int neigh=Bin[i-1][j-1]+Bin[i-1][j]+Bin[i-1][j+1]+Bin[i][j-1]+Bin[i][j+1]+Bin[i+1][j-1]+Bin[i+1][j]+Bin[i+1][j+1];
+			if (neigh>=3)
+			{
+				dup[i][j]=2;
+			}
+		}
+	}
+
+	std::vector<std::vector<int> > cleaned;
+	cleaned.resize(N);
+	for( auto &it : cleaned )
+	{
+		it.resize(N, 0);
+	}
+
+	int count;
+	do
+	{
+		count=0.0;
+		for (int i=1; i<N-1; i++)
+		{
+			for (int j=1; j<N-1; j++)
+			{
+				if (Bin[i][j]!=1) {continue;}
+				if (Bin[i-1][j-1]==1 and Bin[i-1][j]==0 and Bin[i-1][j+1]==0 and Bin[i][j-1]==0 and Bin[i][j+1]==0 and Bin[i+1][j-1]==0 and Bin[i+1][j]==0 and Bin[i+1][j+1]==0)
+				{
+					cleaned[i][j]=1;
+					count++;
+				}
+				else if (Bin[i-1][j-1]==0 and Bin[i-1][j]==1 and Bin[i-1][j+1]==0 and Bin[i][j-1]==0 and Bin[i][j+1]==0 and Bin[i+1][j-1]==0 and Bin[i+1][j]==0 and Bin[i+1][j+1]==0)
+				{
+					cleaned[i][j]=1;
+					count++;
+				}
+				else if (Bin[i-1][j-1]==0 and Bin[i-1][j]==0 and Bin[i-1][j+1]==1 and Bin[i][j-1]==0 and Bin[i][j+1]==0 and Bin[i+1][j-1]==0 and Bin[i+1][j]==0 and Bin[i+1][j+1]==0)
+				{
+					cleaned[i][j]=1;
+					count++;
+				}
+				else if (Bin[i-1][j-1]==0 and Bin[i-1][j]==0 and Bin[i-1][j+1]==0 and Bin[i][j-1]==1 and Bin[i][j+1]==0 and Bin[i+1][j-1]==0 and Bin[i+1][j]==0 and Bin[i+1][j+1]==0)
+				{
+					cleaned[i][j]=1;
+					count++;
+				}
+				else if (Bin[i-1][j-1]==0 and Bin[i-1][j]==0 and Bin[i-1][j+1]==0 and Bin[i][j-1]==0 and Bin[i][j+1]==1 and Bin[i+1][j-1]==0 and Bin[i+1][j]==0 and Bin[i+1][j+1]==0)
+				{
+					cleaned[i][j]=1;
+					count++;
+				}
+				else if (Bin[i-1][j-1]==0 and Bin[i-1][j]==0 and Bin[i-1][j+1]==0 and Bin[i][j-1]==0 and Bin[i][j+1]==0 and Bin[i+1][j-1]==1 and Bin[i+1][j]==0 and Bin[i+1][j+1]==0)
+				{
+					cleaned[i][j]=1;
+					count++;
+				}
+				else if (Bin[i-1][j-1]==0 and Bin[i-1][j]==0 and Bin[i-1][j+1]==0 and Bin[i][j-1]==0 and Bin[i][j+1]==0 and Bin[i+1][j-1]==0 and Bin[i+1][j]==1 and Bin[i+1][j+1]==0)
+				{
+					cleaned[i][j]=1;
+					count++;
+				}
+				else if (Bin[i-1][j-1]==0 and Bin[i-1][j]==0 and Bin[i-1][j+1]==0 and Bin[i][j-1]==0 and Bin[i][j+1]==0 and Bin[i+1][j-1]==0 and Bin[i+1][j]==0 and Bin[i+1][j+1]==1)
+				{
+					cleaned[i][j]=1;
+					count++;
+				}	
+			}
+		}
+
+		for (int i=1; i<N-1; i++)
+		{
+			for (int j=1; j<N-1; j++)
+			{
+				if (Bin[i][j]==1)
+				{
+					Bin[i][j]=Bin[i][j]-cleaned[i][j];
+				}
+				if (Bin[i][j]==2)
+				{
+					Bin[i][j]=1;
+				}
+			}
+		}
+
+	} while (count!=0);
+
+	std::stringstream name;
+	name<<file<<"_cleaned"<<".p";
+
+	std::ofstream Skull;
+	Skull.open(name.str());
+
+	name<<"ng";
+
+	Skull<<"set terminal png"<<std::endl;
+	Skull<<"set output '"<<name.str()<<"'"<<std::endl;
+	Skull<<"set key off"<<std::endl;
+	Skull<<"set xrange [0:86]"<<std::endl;
+	Skull<<"set yrange [0:86]"<<std::endl;
+	Skull<<"set style arrow 2 nohead ls 10 "<<std::endl;
+
+		for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+			if (Bin[i][j]==0) {continue;}
+			//Skull<<"set label '"<<Bin[i][j]<<"' at "<<i+1<<","<<j+1<<endl;
+
+			if (Bin[i-1][j-1]==1)
+			{
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j<<" as 2 lc rgb 'black'"<<std::endl;
+			}
+			if (Bin[i-1][j]==1)
+			{
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j+1<<" as 2 lc rgb 'black'"<<std::endl;
+			}
+			if (Bin[i-1][j+1]==1)
+			{
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i<<","<<j+2<<" as 2 lc rgb 'black'"<<std::endl;
+			}
+			if (Bin[i][j-1]==1)
+			{
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+1<<","<<j<<" as 2 lc rgb 'black'"<<std::endl;
+			}
+			if (Bin[i][j+1]==1)
+			{
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+1<<","<<j+2<<" as 2 lc rgb 'black'"<<std::endl;
+			}
+			if (Bin[i+1][j-1]==1)
+			{
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j<<" as 2 lc rgb 'black'"<<std::endl;
+			}
+			if (Bin[i+1][j]==1)
+			{
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j+1<<" as 2 lc rgb 'black'"<<std::endl;
+			}
+			if (Bin[i+1][j+1]==1)
+			{
+				Skull<< "set arrow from "<<i+1<<","<<j+1<<" to "<<i+2<<","<<j+2<<" as 2 lc rgb 'black'"<<std::endl;
+			}
+		}
+	}
+
+	Skull<<"plot NaN"<<std::endl;
+	Skull.close();
+
+}
+
 double Skeleton::medial_distance()
 {
 

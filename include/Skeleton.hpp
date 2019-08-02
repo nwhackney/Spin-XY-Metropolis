@@ -9,5 +9,6 @@ public:
 
 	Skeleton(lattice init);
 	void thin(std::string file);
+	void back_bone(std::string file);
 	double medial_distance();
 };

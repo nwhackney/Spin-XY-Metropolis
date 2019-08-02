@@ -504,6 +504,7 @@ void run_config()
 	cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	Skeleton Skull(crystal);
 	Skull.thin("Skeleton");
+	Skull.back_bone("Skeleton");
 
 	HK clump(crystal);
 	clump.Find_Cluster();

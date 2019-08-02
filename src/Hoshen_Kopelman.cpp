@@ -314,8 +314,12 @@ double HK::cluster_skeletonize(int label)
 	stringstream name;
 	name<<"Skeleton_"<<label;
 
+	stringstream trim;
+	trim<<"Back_Bone_"<<label;
+
 	Skeleton id_clump(agg);
 	id_clump.thin(name.str());
+	id_clump.back_bone(trim.str());
 
 	return id_clump.medial_distance();
 }
