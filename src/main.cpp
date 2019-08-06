@@ -248,7 +248,7 @@ double Box_Muller(double mu, double sigma)
 	return z0 * sigma + mu;
 }
 
-void Metropolis(lattice &system, double T, ofstream &Efile, int pbc=0)
+void Metropolis(lattice &system, double T, ofstream &Efile, int &count, int pbc=0)
 {
 	double (lattice::*Hamiltonian)();
 	double (lattice::*local_Hamiltonian)(int, int);
@@ -330,6 +330,7 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int pbc=0)
 			if (alpha < min(1.0,U))
 			{
 				system=trial;
+				count++;
 			}
 		}
 	}
@@ -448,14 +449,14 @@ void run_config()
 	const toml::Value* outp = v.find("output");
 	const toml::Value* BCG = v.find("Bond_Color_Grid");
 	const toml::Value*  W = v.find("Width");
-	//const toml::Value* l = v.find("Length");
+	const toml::Value* l = v.find("Length");
 
 	int N= Np->as<int>();
 	int occ= Occp->as<int>();
 	int Time=Tp->as<int>();
 	int pbc=PBC->as<int>();
 	int bcg=BCG->as<int>();
-	//int L=l->as<int>();
+	int L=l->as<int>();
 	double w=W->as<double>();
 	double J=Jp->as<double>();
 	double K=Kp->as<double>();
@@ -472,10 +473,10 @@ void run_config()
 	//crystal.init(N,occ);
 	//crystal.circle(N,8000,8.0);
 	//crystal.rand_square_init(N, 1600);
-	crystal.square_init(N,40);
+	crystal.square_init(N,L);
 
-	//cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
-	//print_sys(crystal,"init");
+	cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
+	print_sys(crystal,"init");
 
 	stringstream Efile;
 	Efile<<"Energy_"<<out_file<<".dat";
@@ -491,20 +492,20 @@ void run_config()
 	
 	double slope,
 	       Temp;
+
+	int accepted=0;
+
 	for (int t=0; t<Time; t++)
 	{
 		slope=10.0/((double) (Time));
 		Temp=1.0/cosh(w*slope*((double) t));
-		Metropolis(crystal,Temp,Edat,pbc);
+		Metropolis(crystal,Temp,Edat,accepted,pbc);
 	}
 
 	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 
 	cout<<"Time: "<<duration<<endl;
 	cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
-	Skeleton Skull(crystal);
-	Skull.thin("Skeleton");
-	Skull.back_bone("Skeleton");
 
 	HK clump(crystal);
 	clump.Find_Cluster();
@@ -522,7 +523,13 @@ void run_config()
 	inf<<"J="<<J<<" K="<<K<<" f="<<f<<endl;
 	inf<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	inf<<"Time: "<<duration<<endl;
+	inf<<"Acceptance Ratio: "<<((double) accepted)/((double) (N*N*Time))<<endl;
 	inf<<"Number of Clusters: "<<NC<<endl<<endl;
+
+	Skeleton Skull(crystal);
+	Skull.thin("Skeleton");
+	Skull.back_bone("Skeleton");
+
 	for (int n=1; n<=clump.max_label();n++)
 	{
 		int size = clump.cluster_size(n);
