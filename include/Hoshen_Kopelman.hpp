@@ -12,6 +12,7 @@ public:
 
 	HK(lattice init);
 	void Find_Cluster();
+	void Find_Cluster_periodic();
 	void print_cluster();
 	void clusters_labelled();
 
@@ -20,8 +21,10 @@ public:
 	int max_label();
 
 	double cluster_energy(int label);
+	double cluster_energy_periodic(int label);
 	double cluster_skeletonize(int label);
 
 	std::vector<double> principle_moments(int label);
 	std::vector<double> mean_distance_to_surface(int label);
+	std::vector<double> mean_distance_to_surface_periodic(int label);
 };

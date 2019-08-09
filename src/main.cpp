@@ -14,8 +14,20 @@
 
 using namespace std;
 
-void print_bonds(lattice &system, string file_name)
+void print_bonds(lattice &system, string file_name, int pbc=0)
 {
+
+	vector<double>(lattice::*BG)(int,int);
+
+	if (pbc==0)
+	{
+		BG = &lattice::Bond_Gauge;
+	}
+	else if (pbc==1)
+	{
+		BG = &lattice::Bond_Gauge_periodic;
+	}
+
 	int N = system.how_many();
 	vector<double> Bonds(2*N,0.0);
 
@@ -26,7 +38,7 @@ void print_bonds(lattice &system, string file_name)
 			if (system.occ(i,j)==1)
 			{
 				vector<double> GE(2,0.0);
-				GE=system.Bond_Gauge(i,j);
+				GE=(system.*BG)(i,j);
 				Bonds.push_back(GE[0]);
 				Bonds.push_back(GE[1]);
 			}
@@ -78,7 +90,7 @@ void print_bonds(lattice &system, string file_name)
 				double Benj=0.0;
 				
 				vector<double> bonds(2,0.0);
-				bonds=system.Bond_Gauge(i,j);
+				bonds=(system.*BG)(i,j);
 
 				Beni=bonds[0]; Benj=bonds[1];
 
@@ -131,8 +143,20 @@ void print_bonds(lattice &system, string file_name)
 	out<<"plot NaN"<<endl;
 }
 
-void print_sys(lattice &system, string file_name)
+void print_sys(lattice &system, string file_name, int pbc=0)
 {
+
+	double(lattice::*HL)(int,int);
+
+	if (pbc==0)
+	{
+		HL = &lattice::H_local;
+	}
+	else if (pbc==1)
+	{
+		HL = &lattice::H_local_periodic;
+	}
+
 	stringstream file;
 	file<<file_name<<".p";
 
@@ -172,7 +196,7 @@ void print_sys(lattice &system, string file_name)
 				dx=cos(theta);
 				dy=sin(theta);
 
-				double E=system.H_local(i,j);
+				double E=(system.*HL)(i,j);
 				double w=(E+2.0)/-4.0;
 
 				double R=255.0-255.0*w*w;
@@ -196,8 +220,19 @@ void print_sys(lattice &system, string file_name)
 	out<<"plot NaN"<<endl;
 }
 
-void print_sys_data(lattice &system, string file_name)
+void print_sys_data(lattice &system, string file_name, int pbc=0)
 {
+	double(lattice::*HL)(int,int);
+
+	if (pbc==0)
+	{
+		HL = &lattice::H_local;
+	}
+	else if (pbc==1)
+	{
+		HL = &lattice::H_local_periodic;
+	}
+
 	stringstream file;
 	file<<file_name<<"_data.dat";
 
@@ -215,7 +250,7 @@ void print_sys_data(lattice &system, string file_name)
 			}
 			else
 			{
-				out << i << " " << j << " " << system.angle(i,j) << " " << system.H_local(i,j) << endl;
+				out << i << " " << j << " " << system.angle(i,j) << " " << (system.*HL)(i,j) << endl;
 			}
 		}
 	}
@@ -253,8 +288,16 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int &count, int pbc=
 	double (lattice::*Hamiltonian)();
 	double (lattice::*local_Hamiltonian)(int, int);
 
-	if (pbc==0) {Hamiltonian = &lattice::H; local_Hamiltonian = &lattice::H_local; }
-	else if (pbc==1){Hamiltonian = &lattice::H_periodic; local_Hamiltonian = &lattice::H_local_periodic;}
+	if (pbc==0)
+	{
+		Hamiltonian = &lattice::H;
+		local_Hamiltonian = &lattice::H_local;
+	}
+	else if (pbc==1)
+	{
+		Hamiltonian = &lattice::H_periodic;
+		local_Hamiltonian = &lattice::H_local_periodic;
+	}
 
 	double E = (system.*Hamiltonian)();
 	Efile<<E<<endl;
@@ -464,9 +507,24 @@ void run_config()
 	string out_file=outp->as<string>();
 
 	double (lattice::*Hamiltonian)();
+	double (HK::*Cluster_Energy)(int);
+	void (HK::*cluster_find)();
+	vector<double>(HK::*Mean_Distance)(int);
 
-	if (pbc==0) {Hamiltonian = &lattice::H;}
-	else if (pbc==1){Hamiltonian = &lattice::H_periodic;}
+	if (pbc==0)
+	{
+		Hamiltonian = &lattice::H;
+		cluster_find = &HK::Find_Cluster;
+		Cluster_Energy = &HK::cluster_energy;
+		Mean_Distance = &HK::mean_distance_to_surface;
+	}
+	else if (pbc==1)
+	{
+		Hamiltonian = &lattice::H_periodic;
+		cluster_find = &HK::Find_Cluster_periodic;
+		Cluster_Energy = &HK::cluster_energy_periodic;
+		Mean_Distance = &HK::mean_distance_to_surface_periodic;
+	}
 
 	lattice crystal;
 	crystal.set_const(J,K,f);
@@ -508,7 +566,7 @@ void run_config()
 	cout<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 
 	HK clump(crystal);
-	clump.Find_Cluster();
+	(clump.*cluster_find)();
 	clump.print_cluster();
 	int NC=clump.cluster_count();
 
@@ -535,14 +593,14 @@ void run_config()
 		int size = clump.cluster_size(n);
 		if (size == 0) {continue;}
 		inf<<"Cluster "<<n<<":"<<endl;
-		inf<<"	Energy: "<<clump.cluster_energy(n)<<endl;
+		inf<<"	Energy: "<<(clump.*Cluster_Energy)(n)<<endl;
 		inf<<"	spin sites: "<<size<<endl;
 		vector<double> pm = clump.principle_moments(n);
 		inf<<"	principle moment 1: "<<2.0*sqrt(pm[0])<<endl;
 		inf<<"	principle moment 2: "<<2.0*sqrt(pm[1])<<endl;
 		inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl;
 		inf<<"	anisotropy: "<< (3.0/2.0)*((pm[0]*pm[0]+pm[1]*pm[1])/((pm[0]+pm[1])*(pm[0]+pm[1]))) - (1.0/2.0)<<endl;
-		vector<double> md = clump.mean_distance_to_surface(n);
+		vector<double> md = (clump.*Mean_Distance)(n);
 		inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl;
 		double fu=clump.cluster_skeletonize(n);
 		inf<<"	Medial Distance: "<<fu<<endl<<endl;
@@ -551,9 +609,9 @@ void run_config()
 
 	Edat.close();
 
-	print_bonds(crystal,"bonds");
-	print_sys(crystal,out.str());
-	print_sys_data(crystal,out.str());
+	print_bonds(crystal,"bonds",pbc);
+	print_sys(crystal,out.str(),pbc);
+	print_sys_data(crystal,out.str(),pbc);
 	clump.clusters_labelled();
 
 }

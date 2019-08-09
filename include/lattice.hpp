@@ -35,6 +35,8 @@ class lattice
 		double H_local_periodic(int i, int j);
 		double Bond_Energy(int i, int j, int n, int m);
 		double H_Neighbor(int i, int j);
+		double H_Neighbor_periodic(int i, int j);
 		std::vector<double> Bond_Gauge(int i, int j);
+		std::vector<double> Bond_Gauge_periodic(int i, int j);
 
 };

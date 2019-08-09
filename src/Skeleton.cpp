@@ -31,213 +31,213 @@ void Skeleton::thin(std::string file)
 		it.resize(N, 0);
 	}
 
-		std::vector<std::vector<int> > copy;
-		copy=Bin;
+	std::vector<std::vector<int> > copy;
+	copy=Bin;
 
-		for (int i=1; i<N-1; i++)
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
 		{
-			for (int j=1; j<N-1; j++)
+			if (copy[i][j]==0) {continue;}
+			if (copy[i-1][j-1]==0 and copy[i][j-1]==0 and copy[i+1][j-1]==0 and copy[i-1][j+1]==1 and copy[i][j+1]==1 and copy[i+1][j+1]==1) // a1
 			{
-				if (copy[i][j]==0) {continue;}
-				if (copy[i-1][j-1]==0 and copy[i][j-1]==0 and copy[i+1][j-1]==0 and copy[i-1][j+1]==1 and copy[i][j+1]==1 and copy[i+1][j+1]==1) // a1
-				{
-					Boundary[i][j]=1;
-				}
+				Boundary[i][j]=1;
 			}
 		}
+	}
 
-		for (int i=1; i<N-1; i++)
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
 		{
-			for (int j=1; j<N-1; j++)
+			if (copy[i][j]==1)
 			{
-				if (copy[i][j]==1)
-				{
-					copy[i][j]=copy[i][j]-Boundary[i][j];
-				}
+				copy[i][j]=copy[i][j]-Boundary[i][j];
 			}
 		}
+	}
 
-		///////
+	///////
 
-		for (int i=1; i<N-1; i++)
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
 		{
-			for (int j=1; j<N-1; j++)
+			if (copy[i][j]==0) {continue;}
+			if (copy[i][j-1]==0 and copy[i+1][j-1]==0 and copy[i+1][j]==0 and copy[i-1][j]==1 and copy[i][j+1]==1) // b1
 			{
-				if (copy[i][j]==0) {continue;}
-				if (copy[i][j-1]==0 and copy[i+1][j-1]==0 and copy[i+1][j]==0 and copy[i-1][j]==1 and copy[i][j+1]==1) // b1
-				{
-					Boundary[i][j]=1;
-				}
+				Boundary[i][j]=1;
+			}
 
+		}
+	}
+
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
+		{
+			if (copy[i][j]==1)
+			{
+				copy[i][j]=copy[i][j]-Boundary[i][j];
 			}
 		}
+	}
 
-		for (int i=1; i<N-1; i++)
+	///////
+
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
 		{
-			for (int j=1; j<N-1; j++)
+			if (copy[i][j]==0) {continue;}
+			if (copy[i+1][j-1]==0 and copy[i+1][j]==0 and copy[i+1][j+1]==0 and copy[i-1][j-1]==1 and copy[i-1][j]==1 and copy[i-1][j+1]==1) // a2
 			{
-				if (copy[i][j]==1)
-				{
-					copy[i][j]=copy[i][j]-Boundary[i][j];
-				}
+				Boundary[i][j]=1;
+			}
+
+		}
+	}
+
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
+		{
+			if (copy[i][j]==1)
+			{
+				copy[i][j]=copy[i][j]-Boundary[i][j];
 			}
 		}
+	}
 
-		///////
+	///////
 
-		for (int i=1; i<N-1; i++)
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
 		{
-			for (int j=1; j<N-1; j++)
+			if (copy[i][j]==0) {continue;}
+			if (copy[i+1][j]==0 and copy[i][j+1]==0 and copy[i+1][j+1]==0 and copy[i-1][j]==1 and copy[i][j-1]==1) // b2
 			{
-				if (copy[i][j]==0) {continue;}
-				if (copy[i+1][j-1]==0 and copy[i+1][j]==0 and copy[i+1][j+1]==0 and copy[i-1][j-1]==1 and copy[i-1][j]==1 and copy[i-1][j+1]==1) // a2
-				{
-					Boundary[i][j]=1;
-				}
+				Boundary[i][j]=1;
+			}
 
+		}
+	}
+
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
+		{
+			if (copy[i][j]==1)
+			{
+				copy[i][j]=copy[i][j]-Boundary[i][j];
 			}
 		}
+	}
 
-		for (int i=1; i<N-1; i++)
+	///////
+
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
 		{
-			for (int j=1; j<N-1; j++)
+			if (copy[i][j]==0) {continue;}
+			if (copy[i-1][j+1]==0 and copy[i][j+1]==0 and copy[i+1][j+1]==0 and copy[i-1][j-1]==1 and copy[i][j-1]==1 and copy[i+1][j-1]==1) // a3
 			{
-				if (copy[i][j]==1)
-				{
-					copy[i][j]=copy[i][j]-Boundary[i][j];
-				}
+				Boundary[i][j]=1;
+			}
+
+		}
+	}
+
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
+		{
+			if (copy[i][j]==1)
+			{
+				copy[i][j]=copy[i][j]-Boundary[i][j];
 			}
 		}
+	}
 
-		///////
+	///////
 
-		for (int i=1; i<N-1; i++)
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
 		{
-			for (int j=1; j<N-1; j++)
+			if (copy[i][j]==0) {continue;}
+			if (copy[i-1][j]==0 and copy[i-1][j+1]==0 and copy[i][j+1]==0 and copy[i][j-1]==1 and copy[i+1][j]==1) // b3
 			{
-				if (copy[i][j]==0) {continue;}
-				if (copy[i+1][j]==0 and copy[i][j+1]==0 and copy[i+1][j+1]==0 and copy[i-1][j]==1 and copy[i][j-1]==1) // b2
-				{
-					Boundary[i][j]=1;
-				}
+				Boundary[i][j]=1;
+			}
 
+		}
+	}
+
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
+		{
+			if (copy[i][j]==1)
+			{
+				copy[i][j]=copy[i][j]-Boundary[i][j];
 			}
 		}
+	}
 
-		for (int i=1; i<N-1; i++)
+	///////
+
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
 		{
-			for (int j=1; j<N-1; j++)
+			if (copy[i][j]==0) {continue;}
+			if (copy[i-1][j-1]==0 and copy[i-1][j]==0 and copy[i-1][j+1]==0 and copy[i+1][j-1]==1 and copy[i+1][j]==1 and copy[i+1][j+1]==1) // a4
 			{
-				if (copy[i][j]==1)
-				{
-					copy[i][j]=copy[i][j]-Boundary[i][j];
-				}
+				Boundary[i][j]=1;
+			}
+
+		}
+	}
+
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
+		{
+			if (copy[i][j]==1)
+			{
+				copy[i][j]=copy[i][j]-Boundary[i][j];
 			}
 		}
+	}
 
-		///////
+	///////
 
-		for (int i=1; i<N-1; i++)
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
 		{
-			for (int j=1; j<N-1; j++)
+			if (copy[i][j]==0) {continue;}
+			if (copy[i-1][j]==0 and copy[i-1][j-1]==0 and copy[i][j-1]==0 and copy[i+1][j]==1 and copy[i][j+1]==1) // b4
 			{
-				if (copy[i][j]==0) {continue;}
-				if (copy[i-1][j+1]==0 and copy[i][j+1]==0 and copy[i+1][j+1]==0 and copy[i-1][j-1]==1 and copy[i][j-1]==1 and copy[i+1][j-1]==1) // a3
-				{
-					Boundary[i][j]=1;
-				}
+				Boundary[i][j]=1;
+			}
 
+		}
+	}
+
+	for (int i=1; i<N-1; i++)
+	{
+		for (int j=1; j<N-1; j++)
+		{
+			if (copy[i][j]==1)
+			{
+				copy[i][j]=copy[i][j]-Boundary[i][j];
 			}
 		}
-
-		for (int i=1; i<N-1; i++)
-		{
-			for (int j=1; j<N-1; j++)
-			{
-				if (copy[i][j]==1)
-				{
-					copy[i][j]=copy[i][j]-Boundary[i][j];
-				}
-			}
-		}
-
-		///////
-
-		for (int i=1; i<N-1; i++)
-		{
-			for (int j=1; j<N-1; j++)
-			{
-				if (copy[i][j]==0) {continue;}
-				if (copy[i-1][j]==0 and copy[i-1][j+1]==0 and copy[i][j+1]==0 and copy[i][j-1]==1 and copy[i+1][j]==1) // b3
-				{
-					Boundary[i][j]=1;
-				}
-
-			}
-		}
-
-		for (int i=1; i<N-1; i++)
-		{
-			for (int j=1; j<N-1; j++)
-			{
-				if (copy[i][j]==1)
-				{
-					copy[i][j]=copy[i][j]-Boundary[i][j];
-				}
-			}
-		}
-
-		///////
-
-		for (int i=1; i<N-1; i++)
-		{
-			for (int j=1; j<N-1; j++)
-			{
-				if (copy[i][j]==0) {continue;}
-				if (copy[i-1][j-1]==0 and copy[i-1][j]==0 and copy[i-1][j+1]==0 and copy[i+1][j-1]==1 and copy[i+1][j]==1 and copy[i+1][j+1]==1) // a4
-				{
-					Boundary[i][j]=1;
-				}
-
-			}
-		}
-
-		for (int i=1; i<N-1; i++)
-		{
-			for (int j=1; j<N-1; j++)
-			{
-				if (copy[i][j]==1)
-				{
-					copy[i][j]=copy[i][j]-Boundary[i][j];
-				}
-			}
-		}
-
-		///////
-
-		for (int i=1; i<N-1; i++)
-		{
-			for (int j=1; j<N-1; j++)
-			{
-				if (copy[i][j]==0) {continue;}
-				if (copy[i-1][j]==0 and copy[i-1][j-1]==0 and copy[i][j-1]==0 and copy[i+1][j]==1 and copy[i][j+1]==1) // b4
-				{
-					Boundary[i][j]=1;
-				}
-
-			}
-		}
-
-		for (int i=1; i<N-1; i++)
-		{
-			for (int j=1; j<N-1; j++)
-			{
-				if (copy[i][j]==1)
-				{
-					copy[i][j]=copy[i][j]-Boundary[i][j];
-				}
-			}
-		}
+	}
 
 	int count=0;
 	do
@@ -520,9 +520,9 @@ void Skeleton::thin(std::string file)
 		}
 	}
 
-	for (int i=0; i<N; i++)
+	for (int i=1; i<N-1; i++)
 	{
-		for (int j=0; j<N; j++)
+		for (int j=1; j<N-1; j++)
 		{
 			if (Bin[i][j]==0) {continue;}
 			//Skull<<"set label '"<<Bin[i][j]<<"' at "<<i+1<<","<<j+1<<endl;
@@ -678,9 +678,9 @@ void Skeleton::back_bone(std::string file)
 	Skull<<"set yrange [0:86]"<<std::endl;
 	Skull<<"set style arrow 2 nohead ls 10 "<<std::endl;
 
-		for (int i=0; i<N; i++)
+		for (int i=1; i<N-1; i++)
 	{
-		for (int j=0; j<N; j++)
+		for (int j=1; j<N-1; j++)
 		{
 			if (Bin[i][j]==0) {continue;}
 			//Skull<<"set label '"<<Bin[i][j]<<"' at "<<i+1<<","<<j+1<<endl;

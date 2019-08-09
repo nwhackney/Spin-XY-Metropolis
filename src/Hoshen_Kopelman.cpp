@@ -93,6 +93,78 @@ void HK::Find_Cluster()
 	}
 }
 
+void HK::Find_Cluster_periodic()
+{
+	for (int i=0; i<N_Spins; i++)
+	{
+		labels.push_back(i);
+	}
+
+	matrix.resize(N);
+	for (int d=0; d<N; d++)
+	{
+		matrix[d].resize(N,0);
+	}
+
+	for (int n=0; n<N; n++)
+	{
+		for (int m=0; m<N; m++)
+		{
+			if (system.occ(n,m) == 0) {continue;}
+			else {matrix[n][m] = 1;}
+		}
+	}
+
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+			if (matrix[i][j])
+			{                        // if occupied ...
+				int up = (i==0 ? matrix[N-1][j] : matrix[i-1][j]);    //  look up  
+				int left = (j==0 ? matrix[i][N-1] : matrix[i][j-1]);  //  look left
+				
+				switch (!!up + !!left)
+				{
+		  			case 0:
+		  				labels[0]++;
+						assert(labels[0] < N_Spins);
+						labels[labels[0]] = labels[0];
+		  				matrix[i][j] = labels[0];      // a new cluster
+		  				break;
+		  
+					case 1:                              // part of an existing cluster
+						matrix[i][j] = max(up,left);    // whichever is nonzero is labelled
+						break;
+		  
+					case 2:                              // this site binds two clusters
+						matrix[i][j] = unionize(up, left, labels);
+						break;
+				}
+
+				for (int i=0; i<N; i++)
+				{
+					if (matrix[i][0]!=0 and matrix[i][N-1]!=0) {matrix[i][N-1]=unionize(matrix[i][0],matrix[i][N-1],labels);}
+				}
+
+				for (int j=0; j<N; j++)
+				{
+					if (matrix[0][j]!=0 and matrix[N-1][j]!=0) {matrix[N-1][j]=unionize(matrix[0][j],matrix[N-1][j],labels);}
+				}
+			}
+		}
+	}
+
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+			if (matrix[i][j]==0) {continue;}
+			matrix[i][j]=find(matrix[i][j],labels);
+		}
+	}
+}
+
 void HK::print_cluster()
 {
 	ofstream file;
@@ -278,6 +350,90 @@ std::vector<double> HK::mean_distance_to_surface(int label)
 	return distr;
 }
 
+std::vector<double> HK::mean_distance_to_surface_periodic(int label)
+{
+	std::vector<int> distance;
+	std::vector<xy> coord;
+	std::vector<double> distr(2,0.0);
+
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+			if (matrix[i][j]==label)
+			{
+				xy temp;
+				temp.x=(double) i; temp.y=(double) j;
+				coord.push_back(temp);
+			}
+		}
+	}
+
+	double NC= (double) coord.size();
+
+	for (int n=0; n<coord.size(); n++)
+	{
+		int i=coord[n].x; int j = coord[n].y;
+		int nc=0.0;
+
+		if (i==0.0) {nc += system.occ(i+1,j)+system.occ(N-1,j);}
+		else if (i==N-1.0) {nc += system.occ(0,j)+system.occ(i-1,j);}
+		else {nc += system.occ(i+1,j)+system.occ(i-1,j);}
+
+		if (j==0.0) {nc += system.occ(i,j+1)+system.occ(i,N-1);}
+		else if (j==N-1.0) {nc += system.occ(i,0)+system.occ(i,j-1);}
+		else {nc += system.occ(i,j+1)+system.occ(i,j-1);}
+
+		if (nc != 4) {distance.push_back(0); continue;}
+
+		int D=2*N;
+		for (int m=0; m<coord.size(); m++)
+		{
+
+			int s=coord[m].x; int t=coord[m].y;
+
+			int nc2=0.0;
+
+			if (s==0) {nc2 += system.occ(s+1,t)+system.occ(N-1,t);}
+			else if (s==N-1) {nc2 += system.occ(0,t)+system.occ(s-1,t);}
+			else {nc2 += system.occ(s+1,t)+system.occ(s-1,t);}
+
+			if (t==0) {nc2 += system.occ(s,t+1)+system.occ(s,N-1);}
+			else if (t==N-1) {nc2 += system.occ(s,0)+system.occ(s,t-1);}
+			else {nc2 += system.occ(s,t+1)+system.occ(s,t-1);}
+
+			int temp=abs(i-s)+abs(j-t);
+			if (temp<D and nc2!=4)
+			{
+				D=temp;
+			}
+
+		}
+		
+		if (D==N) {std::cout<<"DA FUCK?"<<std::endl;}
+		distance.push_back(D);
+	}
+
+	int sum=0;
+	for (int u=0; u<distance.size(); u++)
+	{
+		sum+=distance[u];
+	}
+	
+	double mean = (double) sum / NC;
+
+	double sstd;
+	for (int e=0; e<distance.size(); e++)
+	{
+		sstd+=(((double) distance[e])-mean)*(((double) distance[e])-mean);
+	}
+	
+	double std=sqrt(sstd/(NC-1.0));
+	distr[0]=mean; distr[1]=std;
+	
+	return distr;
+}
+
 double HK::cluster_energy(int label)
 {
 	double Energy;
@@ -289,6 +445,23 @@ double HK::cluster_energy(int label)
 			if (matrix[i][j]==label)
 			{
 				Energy+=system.H_Neighbor(i,j);
+			}
+		}
+	}
+	return Energy;
+}
+
+double HK::cluster_energy_periodic(int label)
+{
+	double Energy;
+
+	for (int i=0; i<system.how_many(); i++)
+	{
+		for (int j=0; j< system.how_many(); j++)
+		{
+			if (matrix[i][j]==label)
+			{
+				Energy+=system.H_Neighbor_periodic(i,j);
 			}
 		}
 	}
