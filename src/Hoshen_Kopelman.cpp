@@ -173,8 +173,8 @@ void HK::print_cluster()
 	file<<"set terminal png"<<endl;
 	file<<"set output 'cluster.png'"<<endl;
 	file<<"set key off"<<endl;
-	file<<"set xrange [0:203]"<<endl;
-	file<<"set yrange [0:203]"<<endl;
+	file<<"set xrange [0:500]"<<endl;
+	file<<"set yrange [0:500]"<<endl;
 	file<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<endl;
 
 	for (int i=0; i<system.how_many(); i++)
@@ -410,7 +410,6 @@ std::vector<double> HK::mean_distance_to_surface_periodic(int label)
 
 		}
 		
-		if (D==N) {std::cout<<"DA FUCK?"<<std::endl;}
 		distance.push_back(D);
 	}
 

@@ -64,8 +64,8 @@ void print_bonds(lattice &system, string file_name, int pbc=0)
      out<<"set output '"<<file_name<<".png'"<<endl;
      out << "set object 1 rectangle from screen 0,0 to screen 1,1 fillcolor rgb 'black' behind"<<endl;
      out<<"set key off"<<endl;
-     out<<"set xrange [0:213]"<<endl;
-     out<<"set yrange [0:213]"<<endl;
+     out<<"set xrange [0:500]"<<endl;
+     out<<"set yrange [0:500]"<<endl;
      out<<"set style arrow 1 head filled size screen 0.03,15 ls 2 lc 'black'"<<endl;
      out<<"set style arrow 2 nohead ls 10 "<<endl;
 
@@ -169,8 +169,8 @@ void print_sys(lattice &system, string file_name, int pbc=0)
 	out<<"set terminal png"<<endl;
 	out<<"set output '"<<png.str()<<"'"<<endl;
 	out<<"set key off"<<endl;
-	out<<"set xrange [0:213]"<<endl;
-	out<<"set yrange [0:213]"<<endl;
+	out<<"set xrange [0:500]"<<endl;
+	out<<"set yrange [0:500]"<<endl;
 	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<endl;
 
 	double d=2.5;
@@ -558,6 +558,13 @@ void run_config()
 		slope=10.0/((double) (Time));
 		Temp=1.0/cosh(w*slope*((double) t));
 		Metropolis(crystal,Temp,Edat,accepted,pbc);
+
+		if (Time%500000==0)
+		{
+			stringstream inter;
+			inter<<"Sys_data_"<<Time<<".dat";
+			print_sys_data(crystal,inter.str(),pbc);
+		}
 	}
 
 	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
