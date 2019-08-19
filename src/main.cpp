@@ -593,7 +593,7 @@ void run_config()
 
 	Skeleton Skull(crystal);
 	Skull.thin("Skeleton");
-	Skull.back_bone("Skeleton");
+	//Skull.back_bone("Skeleton");
 
 	for (int n=1; n<=clump.max_label();n++)
 	{
@@ -610,7 +610,8 @@ void run_config()
 		vector<double> md = (clump.*Mean_Distance)(n);
 		inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl;
 		double fu=clump.cluster_skeletonize(n);
-		inf<<"	Medial Distance: "<<fu<<endl<<endl;
+		inf<<"	Medial Distance: "<<fu<<endl;
+		inf<<"	Circularity: "<<clump.circularity(n)<<endl<<endl;
 	}
 	inf.close();
 

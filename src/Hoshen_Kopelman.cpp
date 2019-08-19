@@ -496,6 +496,50 @@ double HK::cluster_skeletonize(int label)
 	return id_clump.medial_distance();
 }
 
+double HK::circularity(int label)
+{
+	int N=system.how_many();
+	double perimeter=0.0;
+	double n=0.0;
+
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j< N; j++)
+		{
+			if (matrix[i][j]==label)
+			{
+				int neigh=0;
+				if (i!=0)
+				{
+					neigh+=system.occ(i-1,j);
+				}
+				if (i!=N-1)
+				{
+					neigh+=system.occ(i+1,j);
+				}
+				if (j!=0)
+				{
+					neigh+=system.occ(i,j-1);
+				}
+				if (j!=N-1)
+				{
+					neigh+=system.occ(i,j+1);
+				}
+
+				if (neigh==4)
+				{
+					n+=1.0;
+				}
+				else
+				{
+					perimeter+=1.0;
+				}
+			}
+		}
+	}
+	return perimeter/n;
+}
+
 std::vector<double> HK::principle_moments(int label)
 {
 	std::vector<double> moments;
