@@ -313,8 +313,8 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int &count, int pbc=
 
 			if (system.occ(i,j)==0) {continue;}
 
-			int flag = rand() % 3;
-			//int flag = 0;
+			//int flag = rand() % 3;
+			int flag = 0;
 			if (flag==0) // rotation
 			{
 				double width = 0.2*exp(-0.5*T);
