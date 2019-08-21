@@ -529,9 +529,9 @@ void run_config()
 	lattice crystal;
 	crystal.set_const(J,K,f);
 	//crystal.init(N,occ);
-	//crystal.circle(N,8000,8.0);
+	crystal.circle(N,4*L*L,L);
 	//crystal.rand_square_init(N, 1600);
-	crystal.square_init(N,L);
+	//crystal.square_init(N,L);
 
 	cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	print_sys(crystal,"init");
