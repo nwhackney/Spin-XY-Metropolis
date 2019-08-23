@@ -313,8 +313,8 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int &count, int pbc=
 
 			if (system.occ(i,j)==0) {continue;}
 
-			//int flag = rand() % 3;
-			int flag = 0;
+			int flag = rand() % 3;
+			//int flag = 0;
 			if (flag==0) // rotation
 			{
 				double width = 0.2*exp(-0.5*T);
@@ -529,9 +529,9 @@ void run_config()
 	lattice crystal;
 	crystal.set_const(J,K,f);
 	//crystal.init(N,occ);
-	crystal.circle(N,4*L*L,L);
+	//crystal.circle(N,4*L*L,L);
 	//crystal.rand_square_init(N, 1600);
-	//crystal.square_init(N,L);
+	crystal.square_init(N,L);
 
 	cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	print_sys(crystal,"init");
@@ -559,10 +559,10 @@ void run_config()
 		Temp=1.0/cosh(w*slope*((double) t));
 		Metropolis(crystal,Temp,Edat,accepted,pbc);
 
-		if (Time%500000==0)
+		if (t%500000==0)
 		{
 			stringstream inter;
-			inter<<"Sys_data_"<<Time<<".dat";
+			inter<<"Sys_data_"<<t<<".dat";
 			print_sys_data(crystal,inter.str(),pbc);
 		}
 	}
@@ -577,6 +577,8 @@ void run_config()
 	clump.print_cluster();
 	int NC=clump.cluster_count();
 
+	Skeleton BNDRY(crystal);
+	
 	stringstream info;
 	info<<"info_"<<out_file<<".dat";
 
@@ -589,11 +591,12 @@ void run_config()
 	inf<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	inf<<"Time: "<<duration<<endl;
 	inf<<"Acceptance Ratio: "<<((double) accepted)/((double) (N*N*Time))<<endl;
+	inf<<"Number of Holes: "<<BNDRY.boundary()<<endl;
 	inf<<"Number of Clusters: "<<NC<<endl<<endl;
 
 	Skeleton Skull(crystal);
 	Skull.thin("Skeleton");
-	//Skull.back_bone("Skeleton");
+	Skull.back_bone("Skeleton");
 
 	for (int n=1; n<=clump.max_label();n++)
 	{

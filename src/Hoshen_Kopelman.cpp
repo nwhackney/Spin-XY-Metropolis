@@ -482,7 +482,6 @@ double HK::cluster_skeletonize(int label)
 			}
 		}
 	}
-
 	stringstream name;
 	name<<"Skeleton_"<<label;
 
@@ -491,7 +490,7 @@ double HK::cluster_skeletonize(int label)
 
 	Skeleton id_clump(agg);
 	id_clump.thin(name.str());
-	id_clump.back_bone(trim.str());
+	//id_clump.back_bone(trim.str());
 
 	return id_clump.medial_distance();
 }
@@ -509,31 +508,13 @@ double HK::circularity(int label)
 			if (matrix[i][j]==label)
 			{
 				int neigh=0;
-				if (i!=0)
-				{
-					neigh+=system.occ(i-1,j);
-				}
-				if (i!=N-1)
-				{
-					neigh+=system.occ(i+1,j);
-				}
-				if (j!=0)
-				{
-					neigh+=system.occ(i,j-1);
-				}
-				if (j!=N-1)
-				{
-					neigh+=system.occ(i,j+1);
-				}
+				if (i!=0) {neigh+=system.occ(i-1,j);}
+				if (i!=N-1) {neigh+=system.occ(i+1,j);}
+				if (j!=0) {neigh+=system.occ(i,j-1);}
+				if (j!=N-1) {neigh+=system.occ(i,j+1);}
 
-				if (neigh==4)
-				{
-					n+=1.0;
-				}
-				else
-				{
-					perimeter+=1.0;
-				}
+				if (neigh==4) {n+=1.0;}
+				else {perimeter+=1.0;}
 			}
 		}
 	}
