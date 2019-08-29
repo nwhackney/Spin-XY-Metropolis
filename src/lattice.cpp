@@ -35,6 +35,58 @@ void lattice::init(int Number, int occupancy)
 	}
 }
 
+void lattice::restart(int Number, int occupancy, std::string infile)
+{
+
+	N=Number;
+	N_occ=occupancy;
+	
+	std::ifstream in;
+	in.open(infile);
+
+	if (!in)
+	{
+     	std::cout << "Unable to open file";
+     	exit(1); // terminate with error
+     }
+
+     std::vector<double> raw;
+     std::string x;
+
+     while (in>>x)
+     {
+     	std::stringstream item;
+     	item<<x;
+     	double i=0;
+     	item >> i;
+     	raw.push_back(i);
+     }
+
+     in.close();
+
+     site Null;
+	Null.occ=0;
+	Null.angle=0.0;
+
+	spins.resize(Number);
+	for( auto &it : spins )
+	{
+		it.resize(Number, Null);
+	}
+
+     for (int i=0; i<=raw.size()-4; i+=4)
+     {
+          if (raw[i+2]!=-1.0)
+          {
+          	int n=int(raw[i]);
+          	int m=int(raw[i+1]);
+          	double theta=double(raw[i+2]);
+               spins[n][m].occ=1;
+               spins[n][m].angle=theta;
+          }
+     }
+}
+
 void lattice::rand_square_init(int Number, int occupancy)
 {
 	N=Number;
@@ -449,7 +501,7 @@ double lattice::H_periodic()
 				//H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*j)*weight; //New Gauge
 				H+=K*weight;
 			}
-			else
+			else if (i==N-1)
 			{
 				int weight=spins[i][j].occ*spins[0][j].occ;
 				H+=J*cos(spins[i][j].angle-spins[0][j].angle+f*j)*weight; //OG Gauge
@@ -464,7 +516,7 @@ double lattice::H_periodic()
 				//H+=J*cos(spins[i][j].angle-spins[i][j+1].angle)*weight;  //New Gauge
 				H+=K*weight;
 			}
-			else
+			else if (j==N-1)
 			{
 				int weight=spins[i][j].occ*spins[i][0].occ;
 				H+=J*cos(spins[i][j].angle-spins[i][0].angle-f*i)*weight; //OG Gauge

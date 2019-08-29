@@ -313,8 +313,8 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int &count, int pbc=
 
 			if (system.occ(i,j)==0) {continue;}
 
-			//int flag = rand() % 3;
-			int flag = 0;
+			int flag = rand() % 3;
+			//int flag = 0;
 			if (flag==0) // rotation
 			{
 				double width = 0.2*exp(-0.5*T);
@@ -493,6 +493,8 @@ void run_config()
 	const toml::Value* BCG = v.find("Bond_Color_Grid");
 	const toml::Value*  W = v.find("Width");
 	const toml::Value* l = v.find("Length");
+	const toml::Value* im = v.find("Restart");
+	const toml::Value* i = v.find("In_File");
 
 	int N= Np->as<int>();
 	int occ= Occp->as<int>();
@@ -504,7 +506,9 @@ void run_config()
 	double J=Jp->as<double>();
 	double K=Kp->as<double>();
 	double f=fp->as<double>();
+	string restart=im->as<string>();
 	string out_file=outp->as<string>();
+	string in_file=i->as<string>();
 
 	double (lattice::*Hamiltonian)();
 	double (HK::*Cluster_Energy)(int);
@@ -528,10 +532,20 @@ void run_config()
 
 	lattice crystal;
 	crystal.set_const(J,K,f);
-	//crystal.init(N,occ);
-	//crystal.circle(N,4*L*L,L);
-	//crystal.rand_square_init(N, 1600);
-	crystal.square_init(N,L);
+
+	if (restart=="yes")
+	{
+		crystal.restart(N,occ,in_file);
+		cout<<"Punctured Bicycle"<<endl;
+	}
+	else
+	{
+		crystal.init(N,occ);
+		// crystal.circle(N,4*L*L,L);
+		// crystal.rand_square_init(N, 1600);
+		// crystal.square_init(N,L);
+		cout<<"On a Hill Side Desolate"<<endl;
+	}
 
 	cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	print_sys(crystal,"init");
@@ -562,7 +576,7 @@ void run_config()
 		if (t%500000==0)
 		{
 			stringstream inter;
-			inter<<"Sys_data_"<<t<<".dat";
+			inter<<"Sys";
 			print_sys_data(crystal,inter.str(),pbc);
 		}
 	}
