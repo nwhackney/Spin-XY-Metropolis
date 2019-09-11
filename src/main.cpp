@@ -493,8 +493,9 @@ void run_config()
 	const toml::Value* BCG = v.find("Bond_Color_Grid");
 	const toml::Value*  W = v.find("Width");
 	const toml::Value* l = v.find("Length");
-	const toml::Value* im = v.find("Restart");
-	const toml::Value* i = v.find("In_File");
+	const toml::Value* rst = v.find("restart_time");
+	// const toml::Value* im = v.find("Restart");
+	// const toml::Value* i = v.find("In_File");
 
 	int N= Np->as<int>();
 	int occ= Occp->as<int>();
@@ -502,13 +503,14 @@ void run_config()
 	int pbc=PBC->as<int>();
 	int bcg=BCG->as<int>();
 	int L=l->as<int>();
+	int restart_t=rst->as<int>();
 	double w=W->as<double>();
 	double J=Jp->as<double>();
 	double K=Kp->as<double>();
 	double f=fp->as<double>();
-	string restart=im->as<string>();
+	string restart="yes";//im->as<string>();
 	string out_file=outp->as<string>();
-	string in_file=i->as<string>();
+	string in_file="sys_data_2000000.dat_data.dat";//i->as<string>();
 
 	double (lattice::*Hamiltonian)();
 	double (HK::*Cluster_Energy)(int);
@@ -533,18 +535,18 @@ void run_config()
 	lattice crystal;
 	crystal.set_const(J,K,f);
 
+
 	if (restart=="yes")
 	{
 		crystal.restart(N,occ,in_file);
-		cout<<"Punctured Bicycle"<<endl;
 	}
 	else
 	{
-		crystal.init(N,occ);
+		cout<<"FUCK"<<endl;
+		//crystal.init(N,occ);
 		// crystal.circle(N,4*L*L,L);
 		// crystal.rand_square_init(N, 1600);
 		// crystal.square_init(N,L);
-		cout<<"On a Hill Side Desolate"<<endl;
 	}
 
 	cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
@@ -567,7 +569,7 @@ void run_config()
 
 	int accepted=0;
 
-	for (int t=0; t<Time; t++)
+	for (int t=restart_t; t<Time; t++)
 	{
 		slope=10.0/((double) (Time));
 		Temp=1.0/cosh(w*slope*((double) t));
