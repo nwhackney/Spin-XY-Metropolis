@@ -510,7 +510,7 @@ void run_config()
 	double f=fp->as<double>();
 	string restart="yes";//im->as<string>();
 	string out_file=outp->as<string>();
-	string in_file="sys_data_2000000.dat_data.dat";//i->as<string>();
+	string in_file="Sys_data_2000000.dat_data.dat";//i->as<string>();
 
 	double (lattice::*Hamiltonian)();
 	double (HK::*Cluster_Energy)(int);
