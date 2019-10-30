@@ -64,8 +64,8 @@ void print_bonds(lattice &system, string file_name, int pbc=0)
      out<<"set output '"<<file_name<<".png'"<<endl;
      out << "set object 1 rectangle from screen 0,0 to screen 1,1 fillcolor rgb 'black' behind"<<endl;
      out<<"set key off"<<endl;
-     out<<"set xrange [0:213]"<<endl;
-     out<<"set yrange [0:213]"<<endl;
+     out<<"set xrange [0:253]"<<endl;
+     out<<"set yrange [0:253]"<<endl;
      out<<"set style arrow 1 head filled size screen 0.03,15 ls 2 lc 'black'"<<endl;
      out<<"set style arrow 2 nohead ls 10 "<<endl;
 
@@ -169,8 +169,8 @@ void print_sys(lattice &system, string file_name, int pbc=0)
 	out<<"set terminal png"<<endl;
 	out<<"set output '"<<png.str()<<"'"<<endl;
 	out<<"set key off"<<endl;
-	out<<"set xrange [0:213]"<<endl;
-	out<<"set yrange [0:213]"<<endl;
+	out<<"set xrange [0:253]"<<endl;
+	out<<"set yrange [0:253]"<<endl;
 	out<<"set style arrow 1 head filled size screen 0.03,15 ls 2"<<endl;
 
 	double d=2.5;
@@ -313,8 +313,8 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int &count, int pbc=
 
 			if (system.occ(i,j)==0) {continue;}
 
-			int flag = rand() % 3;
-			//int flag = 0;
+			//int flag = rand() % 3;
+			int flag = 0;
 			if (flag==0) // rotation
 			{
 				double width = 0.2*exp(-0.5*T);
@@ -481,7 +481,6 @@ void run_config()
 	}
 
 	const toml::Value& v = pr.value;
-
 	const toml::Value* Np = v.find("N");
 	const toml::Value* Occp = v.find("N_occ");
 	const toml::Value* Jp = v.find("J");
@@ -493,10 +492,10 @@ void run_config()
 	const toml::Value* BCG = v.find("Bond_Color_Grid");
 	const toml::Value*  W = v.find("Width");
 	const toml::Value* l = v.find("Length");
-	const toml::Value* rst = v.find("restart_time");
-	// const toml::Value* im = v.find("Restart");
-	// const toml::Value* i = v.find("In_File");
-
+	const toml::Value* rst = v.find("Restart_Time");
+	const toml::Value* im = v.find("Restart");
+	const toml::Value* i = v.find("In_File");
+	
 	int N= Np->as<int>();
 	int occ= Occp->as<int>();
 	int Time=Tp->as<int>();
@@ -508,9 +507,9 @@ void run_config()
 	double J=Jp->as<double>();
 	double K=Kp->as<double>();
 	double f=fp->as<double>();
-	string restart="yes";//im->as<string>();
+	string restart=im->as<string>();
 	string out_file=outp->as<string>();
-	string in_file="Sys_data_2000000.dat_data.dat";//i->as<string>();
+	string in_file=i->as<string>();
 
 	double (lattice::*Hamiltonian)();
 	double (HK::*Cluster_Energy)(int);
@@ -535,18 +534,16 @@ void run_config()
 	lattice crystal;
 	crystal.set_const(J,K,f);
 
-
 	if (restart=="yes")
 	{
 		crystal.restart(N,occ,in_file);
 	}
 	else
 	{
-		cout<<"FUCK"<<endl;
-		//crystal.init(N,occ);
+		crystal.init(N,occ);
 		// crystal.circle(N,4*L*L,L);
 		// crystal.rand_square_init(N, 1600);
-		// crystal.square_init(N,L);
+		//crystal.square_init(N,L);
 	}
 
 	cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
