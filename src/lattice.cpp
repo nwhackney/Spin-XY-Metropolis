@@ -25,12 +25,80 @@ void lattice::init(int Number, int occupancy)
 		if (spins[i][j].occ==0)
 		{	
 			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
-			//std::cout<<i<<" "<<j<<" "<<theta<<std::endl;
 
 			spins[i][j].occ=1;
 			spins[i][j].angle=theta;
 
 			n++;
+		}
+	}
+}
+
+std::vector<int> simplify(int rise, int run)
+{
+	int minimum=std::min(rise,run);
+	int gcd=1;
+	for (int n=1; n<=minimum; n++)
+	{
+		if (rise%n==0 and run%n==0 and n>gcd)
+		{gcd=n;}
+	}
+	std::vector<int> slope;
+	slope.resize(2);
+	slope[0]=rise/gcd;
+	slope[1]=run/gcd;
+
+	return slope;
+}
+
+void lattice::init_cut(int Number, int occupancy,int rise, int run)
+{
+	N=Number;
+	N_occ=occupancy;
+
+	site Null;
+	Null.occ=0;
+	Null.angle=0.0;
+
+	spins.resize(Number);
+	for( auto &it : spins )
+	{
+		it.resize(Number, Null);
+	}
+
+	int n=0;
+	while (n!=occupancy)
+	{
+		int i=rand() % Number;
+		int j=rand() % Number;
+
+		if (spins[i][j].occ==0)
+		{	
+			double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+
+			spins[i][j].occ=1;
+			spins[i][j].angle=theta;
+
+			n++;
+		}
+	}
+
+	int x=0, y=0, flag=0;
+	std::vector<int> slope = simplify(rise,run);
+	while (flag==0)
+	{
+		for (int i=0; i<slope[0]; i++)
+		{
+			spins[x][y].occ=0; spins[x][y].angle=0.0;
+			y++;
+			if (y>=N) {flag=1; break;}
+		}
+		if (flag==1){break;}
+		for (int j=0; j<slope[1];j++)
+		{
+			spins[x][y].occ=0; spins[x][y].angle=0.0;
+			x++;
+			if (x>=N) {flag=1; break;}
 		}
 	}
 }

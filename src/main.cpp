@@ -211,7 +211,6 @@ void print_sys(lattice &system, string file_name, int pbc=0)
 				Green<<hex<<(int) G;
 				Blue<<hex<<(int) B;
 
-				//out<<"set arrow from "<<x<<","<<y<<" to "<<x+dx<<","<<y+dy<<" as 1 lc rgb \"#"<<Red.str()<<Green.str()<<Blue.str()<<"\""<<endl;
 				out<<"set arrow from "<<x<<","<<y<<" to "<<x+dx<<","<<y+dy<<" as 1 lc 'black'"<<endl;
 			}
 		}
@@ -495,6 +494,8 @@ void run_config()
 	const toml::Value* rst = v.find("Restart_Time");
 	const toml::Value* im = v.find("Restart");
 	const toml::Value* i = v.find("In_File");
+	const toml::Value* ri = v.find("Rise");
+	const toml::Value* ru = v.find("Run");
 	
 	int N= Np->as<int>();
 	int occ= Occp->as<int>();
@@ -503,6 +504,8 @@ void run_config()
 	int bcg=BCG->as<int>();
 	int L=l->as<int>();
 	int restart_t=rst->as<int>();
+	int rise=ri->as<int>();
+	int run=ru->as<int>();
 	double w=W->as<double>();
 	double J=Jp->as<double>();
 	double K=Kp->as<double>();
@@ -540,7 +543,8 @@ void run_config()
 	}
 	else
 	{
-		crystal.init(N,occ);
+		//crystal.init(N,occ);
+		crystal.init_cut(N,occ,rise,run);
 		// crystal.circle(N,4*L*L,L);
 		// crystal.rand_square_init(N, 1600);
 		//crystal.square_init(N,L);
@@ -629,6 +633,7 @@ void run_config()
 		inf<<"	Medial Distance: "<<fu<<endl;
 		inf<<"	Circularity: "<<clump.circularity(n)<<endl<<endl;
 	}
+	inf<<"Rise: "<<rise<<" Run: "<<run<<endl;
 	inf.close();
 
 	Edat.close();

@@ -18,6 +18,7 @@ class lattice
 
 		void set_const(double j, double k, double frustration);
 		void init(int Number, int occupancy);
+		void init_cut(int Number, int occupancy,int rise, int run);
 		void restart(int Number, int occupancy, std::string infile);
 		void rand_square_init(int N, int occupancy);
 		void square_init(int Number, int length);
