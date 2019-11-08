@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <time.h> 
 #include <limits>
-
 #include "lattice.cpp"
 #include "../include/tinytoml-master/include/toml/toml.h"
 #include "Hoshen_Kopelman.cpp"
@@ -543,8 +542,8 @@ void run_config()
 	}
 	else
 	{
-		//crystal.init(N,occ);
-		crystal.init_cut(N,occ,rise,run);
+		crystal.init(N,occ);
+		//crystal.init_cut(N,occ,rise,run);
 		// crystal.circle(N,4*L*L,L);
 		// crystal.rand_square_init(N, 1600);
 		//crystal.square_init(N,L);
@@ -615,32 +614,33 @@ void run_config()
 	Skull.thin("Skeleton");
 	Skull.back_bone("Skeleton");
 
-	for (int n=1; n<=clump.max_label();n++)
-	{
-		int size = clump.cluster_size(n);
-		if (size == 0) {continue;}
-		inf<<"Cluster "<<n<<":"<<endl;
-		inf<<"	Energy: "<<(clump.*Cluster_Energy)(n)<<endl;
-		inf<<"	spin sites: "<<size<<endl;
-		vector<double> pm = clump.principle_moments(n);
-		inf<<"	principle moment 1: "<<2.0*sqrt(pm[0])<<endl;
-		inf<<"	principle moment 2: "<<2.0*sqrt(pm[1])<<endl;
-		inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl;
-		inf<<"	anisotropy: "<< (3.0/2.0)*((pm[0]*pm[0]+pm[1]*pm[1])/((pm[0]+pm[1])*(pm[0]+pm[1]))) - (1.0/2.0)<<endl;
-		vector<double> md = (clump.*Mean_Distance)(n);
-		inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl;
-		double fu=clump.cluster_skeletonize(n);
-		inf<<"	Medial Distance: "<<fu<<endl;
-		inf<<"	Circularity: "<<clump.circularity(n)<<endl<<endl;
-	}
+	print_sys(crystal,out.str(),pbc);
+	print_sys_data(crystal,out.str(),pbc);
+
+	// for (int n=1; n<=clump.max_label();n++)
+	// {
+	// 	int size = clump.cluster_size(n);
+	// 	if (size == 0) {continue;}
+	// 	inf<<"Cluster "<<n<<":"<<endl;
+	// 	inf<<"	Energy: "<<(clump.*Cluster_Energy)(n)<<endl;
+	// 	inf<<"	spin sites: "<<size<<endl;
+	// 	vector<double> pm = clump.principle_moments(n);
+	// 	inf<<"	principle moment 1: "<<2.0*sqrt(pm[0])<<endl;
+	// 	inf<<"	principle moment 2: "<<2.0*sqrt(pm[1])<<endl;
+	// 	inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl;
+	// 	inf<<"	anisotropy: "<< (3.0/2.0)*((pm[0]*pm[0]+pm[1]*pm[1])/((pm[0]+pm[1])*(pm[0]+pm[1]))) - (1.0/2.0)<<endl;
+	// 	vector<double> md = (clump.*Mean_Distance)(n);
+	// 	inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl;
+	// 	double fu=clump.cluster_skeletonize(n);
+	// 	inf<<"	Medial Distance: "<<fu<<endl;
+	// 	inf<<"	Circularity: "<<clump.circularity(n)<<endl<<endl;
+	// }
 	inf<<"Rise: "<<rise<<" Run: "<<run<<endl;
 	inf.close();
 
 	Edat.close();
 
 	print_bonds(crystal,"bonds",pbc);
-	print_sys(crystal,out.str(),pbc);
-	print_sys_data(crystal,out.str(),pbc);
 	clump.clusters_labelled();
 
 }
