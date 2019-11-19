@@ -10,7 +10,6 @@
 #include "Hoshen_Kopelman.cpp"
 //#include "Skeleton.cpp"
 
-
 using namespace std;
 
 void print_bonds(lattice &system, string file_name, int pbc=0)
@@ -311,8 +310,8 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int &count, int pbc=
 
 			if (system.occ(i,j)==0) {continue;}
 
-			//int flag = rand() % 3;
-			int flag = 0;
+			int flag = rand() % 3;
+			//int flag = 0;
 			if (flag==0) // rotation
 			{
 				double width = 0.2*exp(-0.5*T);
@@ -542,11 +541,11 @@ void run_config()
 	}
 	else
 	{
-		crystal.init(N,occ);
+		//crystal.init(N,occ);
 		//crystal.init_cut(N,occ,rise,run);
 		// crystal.circle(N,4*L*L,L);
 		// crystal.rand_square_init(N, 1600);
-		//crystal.square_init(N,L);
+		crystal.square_init(N,L);
 	}
 
 	cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
@@ -572,7 +571,7 @@ void run_config()
 	for (int t=restart_t; t<Time; t++)
 	{
 		//slope=10.0/((double) (Time));
-		slope=10.0/(2000000.0);
+		slope=10.0/(1200000.0);
 		Temp=1.0/cosh(w*slope*((double) t));
 		Metropolis(crystal,Temp,Edat,accepted,pbc);
 
@@ -618,24 +617,24 @@ void run_config()
 	print_sys(crystal,out.str(),pbc);
 	print_sys_data(crystal,out.str(),pbc);
 
-	// for (int n=1; n<=clump.max_label();n++)
-	// {
-	// 	int size = clump.cluster_size(n);
-	// 	if (size == 0) {continue;}
-	// 	inf<<"Cluster "<<n<<":"<<endl;
-	// 	inf<<"	Energy: "<<(clump.*Cluster_Energy)(n)<<endl;
-	// 	inf<<"	spin sites: "<<size<<endl;
-	// 	vector<double> pm = clump.principle_moments(n);
-	// 	inf<<"	principle moment 1: "<<2.0*sqrt(pm[0])<<endl;
-	// 	inf<<"	principle moment 2: "<<2.0*sqrt(pm[1])<<endl;
-	// 	inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl;
-	// 	inf<<"	anisotropy: "<< (3.0/2.0)*((pm[0]*pm[0]+pm[1]*pm[1])/((pm[0]+pm[1])*(pm[0]+pm[1]))) - (1.0/2.0)<<endl;
-	// 	vector<double> md = (clump.*Mean_Distance)(n);
-	// 	inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl;
-	// 	double fu=clump.cluster_skeletonize(n);
-	// 	inf<<"	Medial Distance: "<<fu<<endl;
-	// 	inf<<"	Circularity: "<<clump.circularity(n)<<endl<<endl;
-	// }
+	for (int n=1; n<=clump.max_label();n++)
+	{
+		int size = clump.cluster_size(n);
+		if (size == 0) {continue;}
+		inf<<"Cluster "<<n<<":"<<endl;
+		inf<<"	Energy: "<<(clump.*Cluster_Energy)(n)<<endl;
+		inf<<"	spin sites: "<<size<<endl;
+		vector<double> pm = clump.principle_moments(n);
+		inf<<"	principle moment 1: "<<2.0*sqrt(pm[0])<<endl;
+		inf<<"	principle moment 2: "<<2.0*sqrt(pm[1])<<endl;
+		inf<<"	acylindricity: "<<pm[1]*pm[1]-pm[0]*pm[0]<<endl;
+		inf<<"	anisotropy: "<< (3.0/2.0)*((pm[0]*pm[0]+pm[1]*pm[1])/((pm[0]+pm[1])*(pm[0]+pm[1]))) - (1.0/2.0)<<endl;
+		vector<double> md = (clump.*Mean_Distance)(n);
+		inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl;
+		double fu=clump.cluster_skeletonize(n);
+		inf<<"	Medial Distance: "<<fu<<endl;
+		inf<<"	Circularity: "<<clump.circularity(n)<<endl<<endl;
+	}
 	inf<<"Rise: "<<rise<<" Run: "<<run<<endl;
 	inf.close();
 
