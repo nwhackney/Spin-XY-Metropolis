@@ -570,8 +570,8 @@ void run_config()
 
 	for (int t=restart_t; t<Time; t++)
 	{
-		//slope=10.0/((double) (Time));
-		slope=10.0/(1200000.0);
+		slope=10.0/((double) (Time));
+		//slope=10.0/(1200000.0);
 		Temp=1.0/cosh(w*slope*((double) t));
 		Metropolis(crystal,Temp,Edat,accepted,pbc);
 
