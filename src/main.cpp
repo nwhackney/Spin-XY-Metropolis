@@ -541,11 +541,11 @@ void run_config()
 	}
 	else
 	{
-		//crystal.init(N,occ);
+		crystal.init(N,occ);
 		//crystal.init_cut(N,occ,rise,run);
 		// crystal.circle(N,4*L*L,L);
 		// crystal.rand_square_init(N, 1600);
-		crystal.square_init(N,L);
+		//crystal.square_init(N,L);
 	}
 
 	cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
@@ -570,12 +570,12 @@ void run_config()
 
 	for (int t=restart_t; t<Time; t++)
 	{
-		slope=10.0/((double) (Time));
-		//slope=10.0/(1200000.0);
+		//slope=10.0/((double) (Time));
+		slope=10.0/(1300000.0);
 		Temp=1.0/cosh(w*slope*((double) t));
 		Metropolis(crystal,Temp,Edat,accepted,pbc);
 
-		if (t%500000==0)
+		if (t%50000==0)
 		{
 			stringstream inter;
 			inter<<"Sys";
