@@ -33,6 +33,7 @@ class lattice
 		double angle(int i, int j);
 		double H();
 		double H_local(int i, int j);
+		double strain(int i, int j);
 		double H_periodic();
 		double H_local_periodic(int i, int j);
 		double Bond_Energy(int i, int j, int n, int m);
