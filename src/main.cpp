@@ -223,7 +223,7 @@ void print_sys_data(lattice &system, string file_name, int pbc=0)
 
 	if (pbc==0)
 	{
-		HL = &lattice::H_local;
+		HL = &lattice::strain;
 	}
 	else if (pbc==1)
 	{
@@ -362,6 +362,57 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int &count, int pbc=
 					E_local+=(system.*local_Hamiltonian)(n,m);
 				}
 			}
+
+			double delE = trial_E - E_local;
+			double alpha = ((double) rand()/(double)RAND_MAX);
+
+			double U= exp(-1*delE/T);
+			if (alpha < min(1.0,U))
+			{
+				system=trial;
+				count++;
+			}
+		}
+	}
+}
+
+void Metropolis_spin_only(lattice &system, double T, ofstream &Efile, int &count, int pbc=0)
+{
+	double (lattice::*Hamiltonian)();
+	double (lattice::*local_Hamiltonian)(int, int);
+
+	if (pbc==0)
+	{
+		Hamiltonian = &lattice::H;
+		local_Hamiltonian = &lattice::H_local;
+	}
+	else if (pbc==1)
+	{
+		Hamiltonian = &lattice::H_periodic;
+		local_Hamiltonian = &lattice::H_local_periodic;
+	}
+
+	double E = (system.*Hamiltonian)();
+	Efile<<E<<endl;
+
+	int N=system.how_many();
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N;j ++)
+		{
+			lattice trial = system;
+			double trial_E;
+			double E_local;
+
+			if (system.occ(i,j)==0) {continue;}
+
+			int flag = 0;
+			double width = 0.2*exp(-0.5*T);
+			double theta = Box_Muller(system.angle(i,j),width);
+
+			trial.rotate(i,j,theta);
+			trial_E=(trial.*local_Hamiltonian)(i,j);
+			E_local=(system.*local_Hamiltonian)(i,j);
 
 			double delE = trial_E - E_local;
 			double alpha = ((double) rand()/(double)RAND_MAX);
@@ -571,7 +622,7 @@ void run_config()
 	for (int t=restart_t; t<Time; t++)
 	{
 		//slope=10.0/((double) (Time));
-		slope=10.0/(1300000.0);
+		slope=10.0/(2300000.0);
 		Temp=1.0/cosh(w*slope*((double) t));
 		Metropolis(crystal,Temp,Edat,accepted,pbc);
 
@@ -581,6 +632,12 @@ void run_config()
 			inter<<"Sys";
 			print_sys_data(crystal,inter.str(),pbc);
 		}
+	}
+
+	int end_time=20000;
+	for (int t=0; t<=end_time; t++)
+	{
+		Metropolis_spin_only(crystal,Temp,Edat,accepted,pbc);
 	}
 
 	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
