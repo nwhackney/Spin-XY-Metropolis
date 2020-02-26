@@ -592,9 +592,10 @@ void run_config()
 	}
 	else
 	{
-		crystal.init(N,occ);
+		//crystal.init(N,occ);
 		//crystal.init_cut(N,occ,rise,run);
-		// crystal.circle(N,4*L*L,L);
+		crystal.circle(N,4*L*L, 22.56);
+		crystal.add_diff(N,3);
 		// crystal.rand_square_init(N, 1600);
 		//crystal.square_init(N,L);
 	}
@@ -622,9 +623,9 @@ void run_config()
 	for (int t=restart_t; t<Time; t++)
 	{
 		//slope=10.0/((double) (Time));
-		slope=10.0/(2300000.0);
+		slope=10.0/(2500000.0);
 		Temp=1.0/cosh(w*slope*((double) t));
-		Metropolis(crystal,Temp,Edat,accepted,pbc);
+		Metropolis_spin_only(crystal,Temp,Edat,accepted,pbc);
 
 		if (t%50000==0)
 		{
@@ -634,7 +635,7 @@ void run_config()
 		}
 	}
 
-	int end_time=20000;
+	int end_time=0;
 	for (int t=0; t<=end_time; t++)
 	{
 		Metropolis_spin_only(crystal,Temp,Edat,accepted,pbc);
@@ -661,6 +662,7 @@ void run_config()
 	inf<<occ<<" spin sites"<<endl;
 	inf<<Time<<" sweeps"<<endl;
 	inf<<"J="<<J<<" K="<<K<<" f="<<f<<endl;
+	inf<<"Gamma= "<<(abs(J)-K)/abs(J)<<endl;
 	inf<<"Final Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	inf<<"Time: "<<duration<<endl;
 	inf<<"Acceptance Ratio: "<<((double) accepted)/((double) (N*N*Time))<<endl;

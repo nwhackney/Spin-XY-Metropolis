@@ -25,6 +25,7 @@ class lattice
 		void circle(int N, int occ, double R);
 		void flip(int i, int j);
 		void rotate(int i, int j, double theta);
+		void add_diff(int N, int diff);
 
 		int occ(int i, int j);
 		int how_many();

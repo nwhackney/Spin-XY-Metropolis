@@ -389,6 +389,31 @@ void lattice::circle(int Number, int occupancy, double R)
 	}
 }
 
+void lattice::add_diff(int N, int diff)
+{
+	int added=0;
+	while(added!=diff)
+	{
+		int i=rand() % N;
+		int j=rand() % N;
+
+		if (i==0){continue;} if (j==0){continue;}
+		if (i==N-1){continue;} if (j==N-1){continue;}
+
+		if (spins[i][j].occ==0)
+		{	
+			int neigh=spins[i+1][j].occ+spins[i-1][j].occ+spins[i][j+1].occ+spins[i][j-1].occ;
+			if (neigh==2)
+			{
+				double theta = ((double) rand()*(6.28)/(double)RAND_MAX);
+				spins[i][j].occ=1;
+				spins[i][j].angle=theta;
+				added++;
+			}
+		}
+	}
+}
+
 void lattice::set_const(double j, double k, double frustration)
 {
 	J=j;
