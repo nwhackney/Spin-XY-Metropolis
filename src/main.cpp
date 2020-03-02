@@ -535,6 +535,7 @@ void run_config()
 	const toml::Value* Kp = v.find("K");
 	const toml::Value* fp = v.find("f");
 	const toml::Value* Tp = v.find("Time");
+	const toml::Value* Sl = v.find("Slope");
 	const toml::Value* PBC = v.find("PBC");
 	const toml::Value* outp = v.find("output");
 	const toml::Value* BCG = v.find("Bond_Color_Grid");
@@ -555,6 +556,7 @@ void run_config()
 	int restart_t=rst->as<int>();
 	int rise=ri->as<int>();
 	int run=ru->as<int>();
+	double slp=Sl->as<double>();
 	double w=W->as<double>();
 	double J=Jp->as<double>();
 	double K=Kp->as<double>();
@@ -623,7 +625,7 @@ void run_config()
 	for (int t=restart_t; t<Time; t++)
 	{
 		//slope=10.0/((double) (Time));
-		slope=10.0/(1000000.0);
+		slope=10.0/(slp);
 		Temp=1.0/cosh(w*slope*((double) t));
 		Metropolis(crystal,Temp,Edat,accepted,pbc);
 
