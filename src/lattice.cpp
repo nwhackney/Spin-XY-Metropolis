@@ -519,33 +519,38 @@ double lattice::H_local(int i, int j)
 double lattice::strain(int i, int j)
 {
 	double H=0.0;
+	int neighbors=0;
 
 	if (i!=0)
 	{
 		int weight=spins[i][j].occ*spins[i-1][j].occ;
+		neighbors+=weight;
 		H+=J*cos(spins[i][j].angle-spins[i-1][j].angle-f*j)*weight; //OG Gauge
 		//H+=J*cos(spins[i][j].angle-spins[i-1][j].angle-2.0*f*j)*weight; //New Gauge
 	}
 	if (i!=N-1)
 	{
 		int weight=spins[i][j].occ*spins[i+1][j].occ;
+		neighbors+=weight;
 		H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+f*j)*weight; //OG Gauge
 		//H+=J*cos(spins[i][j].angle-spins[i+1][j].angle+2.0*f*j)*weight; //New Gauge
 	}
 	if (j!=0)
 	{
 		int weight=spins[i][j].occ*spins[i][j-1].occ;
+		neighbors+=weight;
 		H+=J*cos(spins[i][j].angle-spins[i][j-1].angle+f*i)*weight; //OG Gauge
 		//H+=J*cos(spins[i][j].angle-spins[i][j-1].angle)*weight; //New Gauge
 	}
 	if (j!=N-1)
 	{
 		int weight=spins[i][j].occ*spins[i][j+1].occ;
+		neighbors+=weight;
 		H+=J*cos(spins[i][j].angle-spins[i][j+1].angle-f*i)*weight; //OG Gauge
 		//H+=J*cos(spins[i][j].angle-spins[i][j+1].angle)*weight; //New Gauge
 	}
 
-	return H;
+	return H/((double) neighbors);
 }
 
 double lattice::H_local_periodic(int i, int j)

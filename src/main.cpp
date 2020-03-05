@@ -536,6 +536,7 @@ void run_config()
 	const toml::Value* fp = v.find("f");
 	const toml::Value* Tp = v.find("Time");
 	const toml::Value* Sl = v.find("Slope");
+	const toml::Value* ET = v.find("End_Time");
 	const toml::Value* PBC = v.find("PBC");
 	const toml::Value* outp = v.find("output");
 	const toml::Value* BCG = v.find("Bond_Color_Grid");
@@ -550,6 +551,7 @@ void run_config()
 	int N= Np->as<int>();
 	int occ= Occp->as<int>();
 	int Time=Tp->as<int>();
+	int end_time=ET->as<int>();
 	int pbc=PBC->as<int>();
 	int bcg=BCG->as<int>();
 	int L=l->as<int>();
@@ -637,10 +639,10 @@ void run_config()
 		}
 	}
 
-	int end_time=50000;
+	//int end_time=500;
 	for (int t=0; t<=end_time; t++)
 	{
-		Metropolis_spin_only(crystal,Temp,Edat,accepted,pbc);
+		Metropolis_spin_only(crystal,0.0,Edat,accepted,pbc);
 	}
 
 	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
