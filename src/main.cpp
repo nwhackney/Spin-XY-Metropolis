@@ -596,14 +596,13 @@ void run_config()
 	}
 	else
 	{
-		//crystal.init(N,occ);
+		crystal.init(N,occ);
 		//crystal.init_cut(N,occ,rise,run);
 		//crystal.circle(N,4*L*L, 22.56);
 		//crystal.add_diff(N,3);
 		// crystal.rand_square_init(N, 1600);
-		crystal.square_init(N,L);
+		//crystal.square_init(N,L+1);
 	}
-
 	cout<<"Initial Energy: "<<(crystal.*Hamiltonian)()<<endl;
 	print_sys(crystal,"init");
 
@@ -696,7 +695,8 @@ void run_config()
 		inf<<"	Mean Distance to Surface: "<<md[0]<<" STD: "<<md[1]<<endl;
 		double fu=clump.cluster_skeletonize(n);
 		inf<<"	Medial Distance: "<<fu<<endl;
-		inf<<"	Circularity: "<<clump.circularity(n)<<endl<<endl;
+		inf<<"	Circularity: "<<clump.circularity(n)<<endl;
+		inf<<"	On Surface:  "<<clump.surface_members(n)<<endl<<endl;
 	}
 	inf<<"Rise: "<<rise<<" Run: "<<run<<endl;
 	inf.close();

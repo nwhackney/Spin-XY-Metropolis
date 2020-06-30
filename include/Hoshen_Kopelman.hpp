@@ -22,6 +22,7 @@ public:
 
 	double cluster_energy(int label);
 	double cluster_energy_periodic(int label);
+	double surface_members(int label);
 	double cluster_skeletonize(int label);
 	double circularity(int label);
 

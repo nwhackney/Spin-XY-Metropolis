@@ -467,6 +467,46 @@ double HK::cluster_energy_periodic(int label)
 	return Energy;
 }
 
+double HK::surface_members(int label)
+{
+	int on_surface=0;
+	for (int i=0; i<system.how_many(); i++)
+	{
+		for (int j=0; j<system.how_many(); j++)
+		{
+			if (matrix[i][j]==label)
+			{
+				int neighbors;
+				if (i==0)
+				{
+					on_surface++;
+				}
+				else if (j==0)
+				{
+					on_surface++;
+				}
+				else if (i==system.how_many())
+				{
+					on_surface++;
+				}
+				else if (j==system.how_many())
+				{
+					on_surface++;
+				}
+				else
+				{
+					neighbors=system.occ(i-1,j)+system.occ(i+1,j)+system.occ(i,j-1)+system.occ(i,j+1);
+					if (neighbors<4)
+					{
+						on_surface++;
+					}
+				}
+			}
+		}
+	}
+	return on_surface;
+}
+
 double HK::cluster_skeletonize(int label)
 {
 	lattice agg;
