@@ -314,7 +314,7 @@ void Metropolis(lattice &system, double T, ofstream &Efile, int &count, int pbc=
 			//int flag = 0;
 			if (flag==0) // rotation
 			{
-				double width = 0.2*exp(-0.5*T);
+				double width = 0.1*exp(0.5*T);
 				double theta = Box_Muller(system.angle(i,j),width);
 
 				trial.rotate(i,j,theta);
