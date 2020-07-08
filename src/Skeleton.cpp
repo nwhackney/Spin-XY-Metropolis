@@ -909,7 +909,7 @@ int Skeleton::boundary()
           for (int j=1; j<N-1; j++)
           {
                if (tmp[i][j]==0){bndries[i][j]=1;}
-               if (tmp[i][j]==0){bndries[i][j]=0;}
+               else if (tmp[i][j]==0){bndries[i][j]=0;}
           }
      }
 
